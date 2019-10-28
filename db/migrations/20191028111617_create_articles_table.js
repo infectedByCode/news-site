@@ -5,7 +5,7 @@ exports.up = function(knex) {
     articlesTable.string('body').notNullable();
     articlesTable.integer('votes').defaultTo(0);
     articlesTable
-      .uuid('topics')
+      .string('topics')
       .references('topics.slug')
       .notNullable();
     articlesTable
