@@ -19,11 +19,9 @@ exports.seed = function(knex) {
     .then(() => {
       const modifiedArticleData = formatDates(articleData);
 
-      return (articlesInsertions = knex('articles')
-        .join('topics', 'articles.topic', 'topics.slug')
-        .join('users', 'articles.author', 'users.username')
+      return knex('articles')
         .insert(modifiedArticleData)
-        .returning('*'));
+        .returning('*');
     })
     .then(articleRows => {
       const articleIdRef = makeRefObj(articleRows);
