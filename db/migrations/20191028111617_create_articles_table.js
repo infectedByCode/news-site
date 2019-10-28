@@ -1,8 +1,21 @@
-
 exports.up = function(knex) {
-  
+  return knex.schema.createTable('articles', articlesTable => {
+    articlesTable.increments('id').primary();
+    articlesTable.string('title').notNullable();
+    articlesTable.string('body').notNullable();
+    articlesTable.integer('votes').defaultTo(0);
+    articlesTable
+      .uuid('topics')
+      .references('topics.slug')
+      .notNullable();
+    articlesTable
+      .string('author')
+      .references('users.username')
+      .notNullable();
+    articlesTable.timestamp('created_at').defaultTo(knex.fn.now());
+  });
 };
 
 exports.down = function(knex) {
-  
+  return knex.schema.dropTable('articles');
 };
