@@ -51,7 +51,7 @@ describe('app.js', () => {
       });
     });
     describe('/articles/:article_id', () => {
-      it.only('GET:200, returns an article object when given a valid article ID.', () => {
+      it('GET:200, returns an article object when given a valid article ID.', () => {
         return request(app)
           .get('/api/articles/5')
           .expect(200)
@@ -69,6 +69,24 @@ describe('app.js', () => {
             expect(article.id).to.equal(5);
             expect(article.comment_count).to.equal('2');
           });
+      });
+      describe('ERRORS /articles/:article_id', () => {
+        it('GET:400, when article ID is incorrect data type', () => {
+          return request(app)
+            .get('/api/articles/not-an-id')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('invalid input syntax for integer: "not-an-id"');
+            });
+        });
+        it('GET:404, when article ID is a valid data type, but not found', () => {
+          return request(app)
+            .get('/api/articles/99999')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('Article ID "99999" does not exist.');
+            });
+        });
       });
     });
     describe('ERRORS /api', () => {
