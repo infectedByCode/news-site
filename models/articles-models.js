@@ -77,3 +77,12 @@ exports.selectCommentsByArticleId = (article_id, sort_by = 'created_at', order =
           });
     });
 };
+
+exports.selectArticles = () => {
+  return connection('articles')
+    .select('articles.*')
+    .count('*', { as: 'comment_count' })
+    .leftJoin('comments', 'articles.id', 'comments.article_id')
+    .groupBy('articles.id')
+    .returning('*');
+};

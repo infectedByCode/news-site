@@ -3,9 +3,12 @@ const {
   getArticleById,
   patchArticleById,
   postCommentByArticleId,
-  getCommentsByArticleId
+  getCommentsByArticleId,
+  getArticles
 } = require('../controllers/article-controller');
 const { invalidURLError } = require('../errors');
+
+articleRouter.route('/').get(getArticles);
 
 articleRouter
   .route('/:article_id/comments')
