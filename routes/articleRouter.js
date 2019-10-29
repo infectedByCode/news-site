@@ -5,6 +5,7 @@ const {
   postCommentByArticleId,
   getCommentsByArticleId
 } = require('../controllers/article-controller');
+const { invalidURLError } = require('../errors');
 
 articleRouter
   .route('/:article_id/comments')
@@ -15,5 +16,7 @@ articleRouter
   .route('/:article_id')
   .get(getArticleById)
   .patch(patchArticleById);
+
+articleRouter.get('/*', invalidURLError);
 
 module.exports = articleRouter;
