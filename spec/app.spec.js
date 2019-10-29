@@ -48,7 +48,7 @@ describe('app.js', () => {
               expect(msg).to.equal('Username "apple" cannot be found.');
             });
         });
-        it('GET:400, when username is invalid format/data type, i.e. greater than max allowed', () => {
+        it('GET:400, when username is greater than max allowed', () => {
           return request(app)
             .get('/api/users/applesaregreenandredbutnotblue')
             .expect(400)
@@ -140,6 +140,23 @@ describe('app.js', () => {
                 'Invalid additional data provied for article with "1". Please only include { inc_votes: votes }'
               );
             });
+        });
+        describe('/comments', () => {
+          it('POST:201, when an object with keys userame and body with valid data are given', () => {
+            const postReq = { username: 'rogersop', body: 'Error handling is fun!' };
+
+            return request(app)
+              .post('/api/articles/1/comments')
+              .send(postReq)
+              .expect(201)
+              .then(({ body: { comment } }) => {
+                expect(comment).to.have.keys(['comment_id', '`author', 'article_id', 'votes', 'created_at', 'body']);
+                expect(comment.comment_id).to.equal(19);
+                expect(comment.author).to.equal(postReq.username);
+                expect(comment.body).to.equal(postReq.body);
+                expect(comment.votes).to.equal(0);
+              });
+          });
         });
       });
     });
