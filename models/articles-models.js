@@ -54,3 +54,10 @@ exports.createCommentByArticleId = (article_id, data) => {
     })
     .returning('*');
 };
+
+exports.selectCommentsByArticleId = article_id => {
+  return connection('comments')
+    .select('*')
+    .where({ article_id })
+    .returning('*');
+};
