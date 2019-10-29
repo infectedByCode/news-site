@@ -70,6 +70,17 @@ describe('app.js', () => {
             expect(article.comment_count).to.equal('2');
           });
       });
+      it('PATCH:201, returns the updated article when given a valid object of { inc_votes: newVote } is given', () => {
+        const updateReq = { inc_votes: 23 };
+
+        return request(app)
+          .patch('/api/articles/1')
+          .send(updateReq)
+          .expect(201)
+          .then(({ body: { article } }) => {
+            expect(article.votes).to.equal(123);
+          });
+      });
       describe('ERRORS /articles/:article_id', () => {
         it('GET:400, when article ID is incorrect data type', () => {
           return request(app)
