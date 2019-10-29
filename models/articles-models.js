@@ -42,3 +42,15 @@ exports.updateArticleById = (id, data) => {
       return article;
     });
 };
+
+exports.createCommentByArticleId = (article_id, data) => {
+  const { body, username } = data;
+
+  return connection('comments')
+    .insert({
+      article_id,
+      author: username,
+      body
+    })
+    .returning('*');
+};

@@ -1,4 +1,4 @@
-const { selectArticleById, updateArticleById } = require('../models/articles-models');
+const { selectArticleById, updateArticleById, createCommentByArticleId } = require('../models/articles-models');
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
@@ -19,4 +19,15 @@ exports.patchArticleById = (req, res, next) => {
       res.status(201).send({ article });
     })
     .catch(next);
+};
+
+exports.postCommentByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  const data = req.body;
+
+  createCommentByArticleId(article_id, data)
+    .then(([comment]) => {
+      res.status(201).send({ comment });
+    })
+    .then(next);
 };

@@ -150,13 +150,14 @@ describe('app.js', () => {
               .send(postReq)
               .expect(201)
               .then(({ body: { comment } }) => {
-                expect(comment).to.have.keys(['comment_id', '`author', 'article_id', 'votes', 'created_at', 'body']);
+                expect(comment).to.have.keys(['comment_id', 'author', 'article_id', 'votes', 'created_at', 'body']);
                 expect(comment.comment_id).to.equal(19);
                 expect(comment.author).to.equal(postReq.username);
                 expect(comment.body).to.equal(postReq.body);
                 expect(comment.votes).to.equal(0);
               });
           });
+          //
         });
       });
     });
