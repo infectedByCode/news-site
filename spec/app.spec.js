@@ -30,12 +30,13 @@ describe('app.js', () => {
       });
     });
     describe('/users/:username', () => {
-      it('GET:404, returns a user object when given an ID', () => {
+      it('GET:200, returns a user object when given an ID', () => {
         return request(app)
-          .get('/api/users/2')
+          .get('/api/users/lurker')
           .expect(200)
-          .then(({ body: user }) => {
+          .then(({ body: { user } }) => {
             expect(user).to.have.keys(['username', 'avatar_url', 'name']);
+            expect(user.username).to.equal('lurker');
           });
       });
     });
