@@ -1,11 +1,13 @@
 const express = require('express');
 const app = express();
 const apiRouter = require('./routes/apiRouter');
-const { customErrorHandlers, psqlErrorHandlers } = require('./errors');
+const { customErrorHandlers, psqlErrorHandlers, invalidURLError } = require('./errors');
 
 app.use(express.json());
 
 app.use('/api', apiRouter);
+app.get('/*', invalidURLError);
+
 app.use(customErrorHandlers);
 app.use(psqlErrorHandlers);
 

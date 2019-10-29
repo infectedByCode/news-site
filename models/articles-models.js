@@ -21,17 +21,18 @@ exports.selectArticleById = article_id => {
 };
 
 exports.updateArticleById = (id, data) => {
-  const { inc_votes } = data;
-  // FINISH ERROR HANDLE
+  const { inc_votes, ...otherData } = data;
+  // Error handling for bad data requests
   if (!inc_votes || typeof inc_votes !== 'number') {
     return Promise.reject({ status: 400, msg: `Missing or incorrect data provided for article "${id}".` });
   }
-  // if (inc_votes > 1) {
-  //   return Promise.reject({
-  //     status: 400,
-  //     msg: `Invalid additional data provied for article with "${id}". Please only include { inc_votes: votes }`
-  //   });
-  // }
+
+  if (Object.values(otherData).length) {
+    return Promise.reject({
+      status: 400,
+      msg: `Invalid additional data provied for article with "${id}". Please only include { inc_votes: votes }`
+    });
+  }
 
   return connection('articles')
     .first()

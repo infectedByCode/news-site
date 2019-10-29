@@ -17,6 +17,10 @@ exports.psqlErrorHandlers = (err, req, res, next) => {
   }
 };
 
+exports.invalidURLError = (req, res, next) => {
+  res.status(404).send({ msg: 'Error 404 - Invalid URL provided.' });
+};
+
 const createErrorMessage = err => {
   const msg = err.message.split(' - ')[1];
   return msg;
