@@ -98,6 +98,41 @@ describe('app.js', () => {
               expect(msg).to.equal('Article ID "99999" does not exist.');
             });
         });
+        it('PATCH:400, when the body does not contain inc_votes.', () => {
+          const updateReq = {};
+
+          return request(app)
+            .patch('/api/articles/1')
+            .send(updateReq)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('Missing or incorrect data provided for article "1".');
+            });
+        });
+        it('PATCH:400, when the inc_votes is not a valid data type, i.e. number', () => {
+          const updateReq = { inc_votes: 'potato' };
+
+          return request(app)
+            .patch('/api/articles/1')
+            .send(updateReq)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('Missing or incorrect data provided for article "1".');
+            });
+        });
+        it.only('PATCH:400, when other data other than inc_votes is included by client on patch.', () => {
+          const updateReq = { inc_votes: 5, other: 'potato' };
+
+          return request(app)
+            .patch('/api/articles/1')
+            .send(updateReq)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal(
+                'Invalid additional data provied for article with "1". Please only include { inc_votes: votes }'
+              );
+            });
+        });
       });
     });
     describe('ERRORS /api', () => {
