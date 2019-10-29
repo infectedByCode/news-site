@@ -13,6 +13,10 @@ exports.psqlErrorHandlers = (err, req, res, next) => {
     '23502': {
       status: 400,
       msg: createErrorMessage(err)
+    },
+    '23503': {
+      status: 400,
+      msg: createErrorMessage(err)
     }
   };
 

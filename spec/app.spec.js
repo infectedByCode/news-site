@@ -169,6 +169,32 @@ describe('app.js', () => {
                   expect(msg).to.equal('null value in column "body" violates not-null constraint');
                 });
             });
+            it('POST:400, when the datatype given is invalid', () => {
+              const postReq = { username: 66, body: { story: 'abc' } };
+
+              return request(app)
+                .post('/api/articles/1/comments')
+                .send(postReq)
+                .expect(400)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal(
+                    'insert or update on table "comments" violates foreign key constraint "comments_author_foreign"'
+                  );
+                });
+            });
+            it('POST:404, when article ID given is invalid', () => {
+              const postReq = { username: 'rogersop', body: 'Error handling is fun!' };
+
+              return request(app)
+                .post('/api/articles/99999/comments')
+                .send(postReq)
+                .expect(400)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal(
+                    'insert or update on table "comments" violates foreign key constraint "comments_article_id_foreign"'
+                  );
+                });
+            });
           });
         });
       });
