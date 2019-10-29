@@ -142,6 +142,18 @@ describe('app.js', () => {
             });
         });
         describe('/comments', () => {
+          it.only('GET:200, returns an array of comments for a given article ID that is valid', () => {
+            return request(app)
+              .get('/api/articles/1/comments')
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments).to.be.an('array');
+                expect(comments).to.have.lengthOf(13);
+                comments.forEach(comment => {
+                  expect(comment).to.have.keys(['comment_id', 'author', 'article_id', 'votes', 'created_at', 'body']);
+                });
+              });
+          });
           it('POST:201, when an object with keys userame and body with valid data are given', () => {
             const postReq = { username: 'rogersop', body: 'Error handling is fun!' };
 
@@ -182,7 +194,8 @@ describe('app.js', () => {
                   );
                 });
             });
-            it('POST:404, when article ID given is invalid', () => {
+            // Possibly Change
+            it('POST:400, when article ID given is invalid', () => {
               const postReq = { username: 'rogersop', body: 'Error handling is fun!' };
 
               return request(app)
