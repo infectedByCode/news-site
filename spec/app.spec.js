@@ -30,7 +30,7 @@ describe('app.js', () => {
       });
     });
     describe('/users/:username', () => {
-      it('GET:200, returns a user object when given an ID', () => {
+      it('GET:200, returns a user object when given a valid ID', () => {
         return request(app)
           .get('/api/users/lurker')
           .expect(200)
@@ -48,6 +48,27 @@ describe('app.js', () => {
               expect(msg).to.equal('Username "apple" cannot be found.');
             });
         });
+      });
+    });
+    describe('/articles/:article_id', () => {
+      it.only('GET:200, returns an article object when given a valid article ID.', () => {
+        return request(app)
+          .get('/api/articles/5')
+          .expect(200)
+          .then(({ body: { article } }) => {
+            expect(article).to.have.keys([
+              'author',
+              'title',
+              'id',
+              'body',
+              'topic',
+              'created_at',
+              'votes',
+              'comment_count'
+            ]);
+            expect(article.id).to.equal(5);
+            expect(article.comment_count).to.equal('2');
+          });
       });
     });
     describe('ERRORS /api', () => {
