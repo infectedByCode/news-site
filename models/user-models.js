@@ -1,6 +1,11 @@
 const connection = require('../db/connection');
 
 exports.selectUserByUsername = username => {
+  if (username.length > 20)
+    return Promise.reject({
+      status: 400,
+      msg: 'Usernames should be less than 20 characters. Please check and try again.'
+    });
   return connection('users')
     .first()
     .where({ username })

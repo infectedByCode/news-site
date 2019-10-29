@@ -48,6 +48,14 @@ describe('app.js', () => {
               expect(msg).to.equal('Username "apple" cannot be found.');
             });
         });
+        it('GET:400, when username is invalid format/data type, i.e. greater than max allowed', () => {
+          return request(app)
+            .get('/api/users/applesaregreenandredbutnotblue')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('Usernames should be less than 20 characters. Please check and try again.');
+            });
+        });
       });
     });
     describe('/articles/:article_id', () => {
