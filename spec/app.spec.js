@@ -120,7 +120,7 @@ describe('app.js', () => {
               expect(msg).to.equal('Missing or incorrect data provided for article "1".');
             });
         });
-        it.only('PATCH:400, when other data other than inc_votes is included by client on patch.', () => {
+        it('PATCH:400, when other data other than inc_votes is included by client on patch.', () => {
           const updateReq = { inc_votes: 5, other: 'potato' };
 
           return request(app)
@@ -144,6 +144,16 @@ describe('app.js', () => {
             expect(msg).to.equal('Error 404 - Invalid URL provided.');
           });
       });
+    });
+  });
+  describe('ERRORS /*', () => {
+    it('GET:404, when invalid URL is given in the root', () => {
+      return request(app)
+        .get('/invalid')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal('Error 404 - Invalid URL provided.');
+        });
     });
   });
 });
