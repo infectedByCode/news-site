@@ -3,7 +3,7 @@ const connection = require('../db/connection');
 exports.selectArticleById = article_id => {
   return connection('articles')
     .first()
-    .where('id', article_id)
+    .where('id', '=', article_id)
     .then(articleData => {
       if (!articleData) return Promise.reject({ status: 404, msg: `Article ID "${article_id}" does not exist.` });
 
@@ -16,6 +16,16 @@ exports.selectArticleById = article_id => {
     .then(articlePromises => {
       const article = articlePromises[1];
       article.comment_count = articlePromises[0][0].comment_count;
+      return article;
+    });
+};
+
+exports.updateArticleById = (id, inc_votes) => {
+  return connection('articles')
+    .first()
+    .where('id', '=', id)
+    .then(article => {
+      article.votes += inc_votes;
       return article;
     });
 };
