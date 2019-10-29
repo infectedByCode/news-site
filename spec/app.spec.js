@@ -142,7 +142,8 @@ describe('app.js', () => {
             });
         });
         describe('/comments', () => {
-          it.only('GET:200, returns an array of comments for a given article ID that is valid', () => {
+          // HOW TO HANDLE NO COMMENTS --> 200 or 404
+          it('GET:200, returns an array of comments for a given article ID that is valid', () => {
             return request(app)
               .get('/api/articles/1/comments')
               .expect(200)
@@ -170,6 +171,14 @@ describe('app.js', () => {
               });
           });
           describe('ERRORS /comments', () => {
+            it('GET:404, when an article is not found', () => {
+              return request(app)
+                .get('/api/articles/99999/comments')
+                .expect(404)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal('Article 99999 not found.');
+                });
+            });
             it('POST:400, when body is empty or missing data when article ID is valid', () => {
               const postReq = { username: 'rogersop' };
 

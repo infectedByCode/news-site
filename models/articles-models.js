@@ -56,8 +56,16 @@ exports.createCommentByArticleId = (article_id, data) => {
 };
 
 exports.selectCommentsByArticleId = article_id => {
-  return connection('comments')
-    .select('*')
-    .where({ article_id })
-    .returning('*');
+  ///// NEEDS QUERIES SORT_BY AND ORDER /////
+  return connection('articles')
+    .first()
+    .where('id', '=', article_id)
+    .then(article => {
+      if (!article) return Promise.reject({ status: 404, msg: `Article ${article_id} not found.` });
+      else
+        return connection('comments')
+          .select('*')
+          .where({ article_id })
+          .returning('*');
+    });
 };
