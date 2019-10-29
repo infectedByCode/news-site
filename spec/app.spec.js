@@ -1,7 +1,10 @@
 process.env.NODE_ENV = 'test';
 
-const { expect } = require('chai');
+const chai = require('chai');
+const expect = chai.expect;
 const request = require('supertest');
+const chaiSorted = require('chai-sorted');
+chai.use(chaiSorted);
 
 const app = require('../app');
 const connection = require('../db/connection');
@@ -162,6 +165,33 @@ describe('app.js', () => {
                 expect(msg).to.equal('Unfortunately, no comments have been made about this article.');
               });
           });
+          it('GET:200, returns correctly sorted array of comments with default sort being created_at with default order of descending', () => {
+            return request(app)
+              .get('/api/articles/1/comments?sort_by=article_id')
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments).to.be.an('array');
+                expect(comments).to.be.descendingBy('article_id');
+              });
+          });
+          it('GET:200, returns array sorted by the default created_at in ascending order', () => {
+            return request(app)
+              .get('/api/articles/1/comments?order=asc')
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments).to.be.an('array');
+                expect(comments).to.be.ascendingBy('created_at');
+              });
+          });
+          it('GET:200, returns array sorted by non-default column and in non-default order', () => {
+            return request(app)
+              .get('/api/articles/1/comments?order=asc&sort_by=author')
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments).to.be.an('array');
+                expect(comments).to.be.ascendingBy('author');
+              });
+          });
           it('POST:201, when an object with keys userame and body with valid data are given', () => {
             const postReq = { username: 'rogersop', body: 'Error handling is fun!' };
 
@@ -186,6 +216,7 @@ describe('app.js', () => {
                   expect(msg).to.equal('Article 99999 not found.');
                 });
             });
+            //
             it('POST:400, when body is empty or missing data when article ID is valid', () => {
               const postReq = { username: 'rogersop' };
 
