@@ -39,6 +39,16 @@ describe('app.js', () => {
             expect(user.username).to.equal('lurker');
           });
       });
+      describe('ERRORS', () => {
+        it('GET:404, when username does not exist', () => {
+          return request(app)
+            .get('/api/users/apple')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('Username "apple" cannot be found.');
+            });
+        });
+      });
     });
     describe('ERRORS /api', () => {
       it('GET:404, when URL is invalid enpoint ', () => {
