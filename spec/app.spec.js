@@ -1,7 +1,6 @@
 process.env.NODE_ENV = 'test';
 
-const chai = require('chai');
-const expect = chai.expect;
+const { expect } = require('chai');
 const request = require('supertest');
 
 const app = require('../app');
@@ -17,7 +16,7 @@ describe('app.js', () => {
   });
   // Testing for endpoints
   describe('/api', () => {
-    describe('/api/topics', () => {
+    describe('/topics', () => {
       it('GET:200, returns an object with all topics in the database.', () => {
         return request(app)
           .get('/api/topics')
@@ -30,15 +29,25 @@ describe('app.js', () => {
           });
       });
     });
-  });
-  describe('/api ERRORS', () => {
-    it('GET:404, when URL is invalid enpoint ', () => {
-      return request(app)
-        .get('/api/sdada')
-        .expect(404)
-        .then(({ body: { msg } }) => {
-          expect(msg).to.equal('Error 404 - Invalid URL provided.');
-        });
+    describe('/users/:username', () => {
+      it('GET:404, returns a user object when given an ID', () => {
+        return request(app)
+          .get('/api/users/2')
+          .expect(200)
+          .then(({ body: user }) => {
+            expect(user).to.have.keys(['username', 'avatar_url', 'name']);
+          });
+      });
+    });
+    describe('ERRORS /api', () => {
+      it('GET:404, when URL is invalid enpoint ', () => {
+        return request(app)
+          .get('/api/sdada')
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal('Error 404 - Invalid URL provided.');
+          });
+      });
     });
   });
 });
