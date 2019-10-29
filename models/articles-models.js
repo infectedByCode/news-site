@@ -55,8 +55,7 @@ exports.createCommentByArticleId = (article_id, data) => {
     .returning('*');
 };
 
-exports.selectCommentsByArticleId = article_id => {
-  ///// NEEDS QUERIES SORT_BY AND ORDER /////
+exports.selectCommentsByArticleId = (article_id, sort_by = 'created_at', order = 'desc') => {
   return connection('articles')
     .first()
     .where('id', '=', article_id)
@@ -66,6 +65,7 @@ exports.selectCommentsByArticleId = article_id => {
         return connection('comments')
           .select('*')
           .where({ article_id })
+          .orderBy(sort_by, order)
           .returning('*')
           .then(comments => {
             if (!comments.length)
