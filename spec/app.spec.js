@@ -80,6 +80,16 @@ describe('app.js', () => {
             });
           });
       });
+      describe('ERROR /articles', () => {
+        it('GET:404, when the URL is invalid', () => {
+          return request(app)
+            .get('/api/articless')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('Error 404 - Invalid URL provided.');
+            });
+        });
+      });
       describe('/:article_id', () => {
         it('GET:200, returns an article object when given a valid article ID.', () => {
           return request(app)
