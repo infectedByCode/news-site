@@ -216,7 +216,14 @@ describe('app.js', () => {
                   expect(msg).to.equal('Article 99999 not found.');
                 });
             });
-            //
+            it('GET:400, when sort_by query is not a valid column', () => {
+              return request(app)
+                .get('/api/articles/1/comments?sort_by=banana')
+                .expect(400)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal('column "banana" does not exist. Please sort_by a different column.');
+                });
+            });
             it('POST:400, when body is empty or missing data when article ID is valid', () => {
               const postReq = { username: 'rogersop' };
 

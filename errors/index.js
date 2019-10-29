@@ -5,6 +5,7 @@ exports.customErrorHandlers = (err, req, res, next) => {
 };
 
 exports.psqlErrorHandlers = (err, req, res, next) => {
+  console.log(err.code);
   const errRef = {
     '22P02': {
       status: 400,
@@ -17,6 +18,10 @@ exports.psqlErrorHandlers = (err, req, res, next) => {
     '23503': {
       status: 400,
       msg: createErrorMessage(err)
+    },
+    '42703': {
+      status: 400,
+      msg: createErrorMessage(err) + '. Please sort_by a different column.'
     }
   };
 
