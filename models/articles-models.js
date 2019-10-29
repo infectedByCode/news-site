@@ -66,6 +66,14 @@ exports.selectCommentsByArticleId = article_id => {
         return connection('comments')
           .select('*')
           .where({ article_id })
-          .returning('*');
+          .returning('*')
+          .then(comments => {
+            if (!comments.length)
+              return Promise.reject({
+                status: 200,
+                msg: 'Unfortunately, no comments have been made about this article.'
+              });
+            else return comments;
+          });
     });
 };

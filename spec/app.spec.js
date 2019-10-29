@@ -142,7 +142,6 @@ describe('app.js', () => {
             });
         });
         describe('/comments', () => {
-          // HOW TO HANDLE NO COMMENTS --> 200 or 404
           it('GET:200, returns an array of comments for a given article ID that is valid', () => {
             return request(app)
               .get('/api/articles/1/comments')
@@ -153,6 +152,14 @@ describe('app.js', () => {
                 comments.forEach(comment => {
                   expect(comment).to.have.keys(['comment_id', 'author', 'article_id', 'votes', 'created_at', 'body']);
                 });
+              });
+          });
+          it('GET:200, returns a message when there are no comments for a found article', () => {
+            return request(app)
+              .get('/api/articles/2/comments')
+              .expect(200)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('Unfortunately, no comments have been made about this article.');
               });
           });
           it('POST:201, when an object with keys userame and body with valid data are given', () => {
