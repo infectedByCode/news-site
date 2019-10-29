@@ -157,7 +157,19 @@ describe('app.js', () => {
                 expect(comment.votes).to.equal(0);
               });
           });
-          //
+          describe('ERRORS /comments', () => {
+            it('POST:400, when body is empty or missing data when article ID is valid', () => {
+              const postReq = { username: 'rogersop' };
+
+              return request(app)
+                .post('/api/articles/1/comments')
+                .send(postReq)
+                .expect(400)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal('null value in column "body" violates not-null constraint');
+                });
+            });
+          });
         });
       });
     });
