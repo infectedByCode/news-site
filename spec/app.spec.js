@@ -470,16 +470,63 @@ describe('app.js', () => {
               expect(comment).to.have.keys(['comment_id', 'author', 'article_id', 'votes', 'created_at', 'body']);
             });
         });
+        it('PATCH:200, returns the unchanged comment when votes is zero', () => {
+          const updateReq = { inc_votes: 0 };
+
+          return request(app)
+            .patch('/api/comments/1')
+            .send(updateReq)
+            .expect(200)
+            .then(({ body: { comment } }) => {
+              expect(comment.votes).to.equal(16);
+              expect(comment).to.have.keys(['comment_id', 'author', 'article_id', 'votes', 'created_at', 'body']);
+            });
+        });
         describe('ERRORS /:comment_id', () => {
           it('PATCH:404, when the comment ID is a valid format but not found', () => {
             const updateReq = { inc_votes: 5 };
+            const comment_id = 1999;
 
             return request(app)
-              .patch('/api/comments/1999')
+              .patch(`/api/comments/${comment_id}`)
               .send(updateReq)
               .expect(404)
               .then(({ body: { msg } }) => {
-                expect(msg).to.equal('');
+                expect(msg).to.equal(`Comment "${comment_id}" cannot be found.`);
+              });
+          });
+          it('PATCH:400, when the comment_id is an invalid format', () => {
+            const updateReq = { inc_votes: 5 };
+            const comment_id = 'Not-really-a-num';
+
+            return request(app)
+              .patch(`/api/comments/${comment_id}`)
+              .send(updateReq)
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal(`invalid input syntax for integer: "Not-really-a-num"`);
+              });
+          });
+          it('PATCH:400, when the inc_votes data type is not suitable', () => {
+            const updateReq = { inc_votes: 'kangaroos' };
+
+            return request(app)
+              .patch('/api/comments/1')
+              .send(updateReq)
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('invalid input syntax for integer: "NaN"');
+              });
+          });
+          it('PATCH:400, when the data contains other data than inc_votes', () => {
+            const updateReq = { inc_votes: 5, other_col: 1000 };
+
+            return request(app)
+              .patch('/api/comments/1')
+              .send(updateReq)
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('Please only include { inc_votes: "number" } when using the API');
               });
           });
         });
