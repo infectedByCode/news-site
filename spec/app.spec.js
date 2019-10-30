@@ -446,11 +446,21 @@ describe('app.js', () => {
         });
       });
     });
-    // describe('/comments', () => {
-    //   describe('/:comment:id', () => {
-    //     it('', () => {});
-    //   });
-    // });
+    describe('/comments', () => {
+      describe('/:comment:id', () => {
+        it('PATCH:201, returns the updated comment', () => {
+          const updateReq = { inc_votes: 5 };
+
+          return request(app)
+            .patch('/api/comments/1')
+            .send(updateReq)
+            .expect(201)
+            .then(({ body: { comment } }) => {
+              expect(comment.votes).to.equal(21);
+            });
+        });
+      });
+    });
   });
   describe('ERRORS /*', () => {
     it('GET:404, when invalid URL is given in the root', () => {
