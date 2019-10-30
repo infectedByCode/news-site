@@ -183,7 +183,7 @@ describe('app.js', () => {
             .get(`/api/articles?author=${author}`)
             .expect(404)
             .then(({ body: { msg } }) => {
-              expect(msg).to.equal(`No articles can be found by ${author}`);
+              expect(msg).to.equal(`No articles can be found by "${author}".`);
             });
         });
         it('GET:400, when author given does not exist', () => {
@@ -201,7 +201,7 @@ describe('app.js', () => {
             .get(`/api/articles?topic=${topic}`)
             .expect(404)
             .then(({ body: { msg } }) => {
-              expect(msg).to.equal(`No articles can be found with topic "${topic}"`);
+              expect(msg).to.equal(`No articles can be found with topic "${topic}".`);
             });
         });
         it('GET:400, when topic does not exist', () => {
@@ -210,7 +210,7 @@ describe('app.js', () => {
             .get(`/api/articles?topic=${topic}`)
             .expect(400)
             .then(({ body: { msg } }) => {
-              expect(msg).to.equal(`Topic "${topic}" does not exist`);
+              expect(msg).to.equal(`Topic "${topic}" does not exist.`);
             });
         });
       });
