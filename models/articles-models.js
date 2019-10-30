@@ -78,7 +78,7 @@ exports.selectCommentsByArticleId = (article_id, sort_by = 'created_at', order =
     });
 };
 
-exports.selectArticles = () => {
+exports.selectArticles = (sort_by = 'created_at', order = 'desc') => {
   return connection('articles')
     .select(
       'articles.id',
@@ -91,5 +91,6 @@ exports.selectArticles = () => {
     .count('comments.comment_id', { as: 'comment_count' })
     .leftJoin('comments', 'articles.id', 'comments.article_id')
     .groupBy('articles.id')
+    .orderBy(sort_by, order)
     .returning('*');
 };
