@@ -49,6 +49,28 @@ describe('app.js', () => {
             });
           });
       });
+      describe('ERRORS /topics', () => {
+        it('GET:404, when the client uses incorrect URL', () => {
+          return request(app)
+            .get('/api/t0pics')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('Error 404 - Invalid URL provided.');
+            });
+        });
+        it('STATUS:405, when client attempt an illegal method', () => {
+          const invalidMethods = ['put', 'patch', 'post', 'delete'];
+          const methodPromises = invalidMethods.map(method => {
+            return request(app)
+              [method]('/api/topics')
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('method not allowed');
+              });
+          });
+          return Promise.all(methodPromises);
+        });
+      });
     });
     describe('/users/:username', () => {
       it('GET:200, returns a user object when given a valid ID', () => {
