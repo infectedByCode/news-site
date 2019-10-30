@@ -179,6 +179,18 @@ describe('app.js', () => {
               expect(msg).to.equal('Error 404 - Invalid URL provided.');
             });
         });
+        it('GET:405, when client attempt an illegal method', () => {
+          const invalidMethods = ['post', 'put', 'patch', 'delete'];
+          const methodPromises = invalidMethods.map(method => {
+            return request(app)
+              [method]('/api/articles')
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('method not allowed');
+              });
+          });
+          return Promise.all(methodPromises);
+        });
         it('GET:400, when the sort_by column does not exist', () => {
           return request(app)
             .get('/api/articles?sort_by=cars')
@@ -281,6 +293,18 @@ describe('app.js', () => {
               .then(({ body: { msg } }) => {
                 expect(msg).to.equal('Article ID "99999" does not exist.');
               });
+          });
+          it('GET:405, when client attempt an illegal method', () => {
+            const invalidMethods = ['put', 'post', 'delete'];
+            const methodPromises = invalidMethods.map(method => {
+              return request(app)
+                [method]('/api/articles/5')
+                .expect(405)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal('method not allowed');
+                });
+            });
+            return Promise.all(methodPromises);
           });
           it('PATCH:400, when the body does not contain inc_votes.', () => {
             const updateReq = {};
@@ -388,6 +412,18 @@ describe('app.js', () => {
                 });
             });
             describe('ERRORS /comments', () => {
+              it('GET:405, when client attempt an illegal method', () => {
+                const invalidMethods = ['put', 'patch', 'delete'];
+                const methodPromises = invalidMethods.map(method => {
+                  return request(app)
+                    [method]('/api/articles')
+                    .expect(405)
+                    .then(({ body: { msg } }) => {
+                      expect(msg).to.equal('method not allowed');
+                    });
+                });
+                return Promise.all(methodPromises);
+              });
               it('GET:404, when an article is not found', () => {
                 return request(app)
                   .get('/api/articles/99999/comments')

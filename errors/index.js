@@ -29,6 +29,14 @@ exports.psqlErrorHandlers = (err, req, res, next) => {
   }
 };
 
+exports.handle405Errors = (req, res, next) => {
+  res.status(405).send({ msg: 'method not allowed' });
+};
+
+exports.handleServerErrors = (err, req, res, next) => {
+  res.status(500).send({ msg: 'Something has gone wrong. Please try again later.' });
+};
+
 exports.invalidURLError = (req, res, next) => {
   res.status(404).send({ msg: 'Error 404 - Invalid URL provided.' });
 };
