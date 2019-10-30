@@ -78,7 +78,7 @@ exports.selectCommentsByArticleId = (article_id, sort_by = 'created_at', order =
     });
 };
 
-exports.selectArticles = (sort_by = 'created_at', order = 'desc') => {
+exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic) => {
   return connection('articles')
     .select(
       'articles.id',
@@ -92,5 +92,10 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc') => {
     .leftJoin('comments', 'articles.id', 'comments.article_id')
     .groupBy('articles.id')
     .orderBy(sort_by, order)
+    .modify(query => {
+      if (author && topic) query.where('articles.author', author).andWhere('articles.topic', topic);
+      if (author) query.where('articles.author', author);
+      if (topic) query.where('articles.topic', topic);
+    })
     .returning('*');
 };
