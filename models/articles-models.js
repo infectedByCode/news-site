@@ -33,13 +33,18 @@ exports.updateArticleById = (id, data) => {
       msg: `Invalid additional data provied for article with "${id}". Please only include { inc_votes: votes }`
     });
   }
-
+  // Increment vote count, then return with comment_count included
   return connection('articles')
-    .first()
     .where('id', '=', id)
-    .then(article => {
-      article.votes += inc_votes;
-      return article;
+    .increment('votes', inc_votes)
+    .then(() => {
+      return connection('articles')
+        .select('articles.*')
+        .where('id', '=', id)
+        .count('comments.comment_id', { as: 'comment_count' })
+        .leftJoin('comments', 'articles.id', 'comments.article_id')
+        .groupBy('articles.id')
+        .returning('*');
     });
 };
 
