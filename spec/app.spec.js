@@ -150,7 +150,7 @@ describe('app.js', () => {
       });
       it('GET:200, returns an array filtered and sorted by non-default values', () => {
         return request(app)
-          .get('/api/articles?topic=mitch&author=butter_bridge')
+          .get('/api/articles?topic=mitch&author=butter_bridge&sort_by=title&order=asc')
           .expect(200)
           .then(({ body: { articles } }) => {
             expect(articles).to.be.ascendingBy('title');
@@ -167,6 +167,22 @@ describe('app.js', () => {
             .expect(404)
             .then(({ body: { msg } }) => {
               expect(msg).to.equal('Error 404 - Invalid URL provided.');
+            });
+        });
+        it('GET:400, when the sort_by column does not exist', () => {
+          return request(app)
+            .get('/api/articles?sort_by=cars')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('column "cars" does not exist. Please sort_by a different column.');
+            });
+        });
+        it('GET:400, when the author does not exist in authors table', () => {
+          return request(app)
+            .get('/api/articles?order=bananaman')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('');
             });
         });
       });
