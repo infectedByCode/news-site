@@ -99,7 +99,15 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic)
     })
     .then(query => {
       // Check if any articles were found. If none, send message with 404, else send data.
-      if (!query.length && author) return Promise.reject({ status: 404, msg: `No articles can be found by ${author}` });
+      if (!query.length && author) {
+        return connection('users')
+          .select('*')
+          .where('users.username', '=', author)
+          .then(query => {
+            if (!query.length) return Promise.reject({ status: 400, msg: `Author "${author}" does not exist.` });
+            else return Promise.reject({ status: 404, msg: `No articles can be found by ${author}` });
+          });
+      }
       if (!query.length && topic)
         return Promise.reject({ status: 404, msg: `No articles can be found with topic "${topic}"` });
       return query;
