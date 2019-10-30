@@ -137,6 +137,18 @@ describe('app.js', () => {
             });
           });
       });
+      it('GET:200, returns an array of article objects filtered by article topic and author.', () => {
+        return request(app)
+          .get('/api/articles?topic=mitch&author=butter_bridge')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            articles.forEach(article => {
+              expect(article.topic).to.equal('cats');
+              expect(article.author).to.equal('butter_bridge');
+            });
+          });
+      });
+
       describe('ERROR /articles', () => {
         it('GET:404, when the URL is invalid', () => {
           return request(app)
