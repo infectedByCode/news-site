@@ -177,12 +177,31 @@ describe('app.js', () => {
               expect(msg).to.equal('column "cars" does not exist. Please sort_by a different column.');
             });
         });
-        it('GET:400, when the author does not exist in authors table', () => {
+        it('GET:404, when no articles were found by given author when author exists', () => {
+          const author = 'lurker';
           return request(app)
-            .get('/api/articles?order=bananaman')
+            .get(`/api/articles?author=${author}`)
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal(`No articles can be found by ${author}`);
+            });
+        });
+        it.only('GET:400, when author given does not exist', () => {
+          const author = 'bananaman';
+          return request(app)
+            .get(`/api/articles?author=${author}`)
             .expect(400)
             .then(({ body: { msg } }) => {
-              expect(msg).to.equal('');
+              expect(msg).to.equal(`No articles can be found by ${author}`);
+            });
+        });
+        it('GET:404, when no articles were found with topic given', () => {
+          const topic = 'random topic';
+          return request(app)
+            .get(`/api/articles?topic=${topic}`)
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal(`No articles can be found with topic "${topic}"`);
             });
         });
       });
