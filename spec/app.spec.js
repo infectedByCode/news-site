@@ -77,15 +77,6 @@ describe('app.js', () => {
           .then(({ body: { articles } }) => {
             expect(articles).to.be.an('array');
             expect(articles).to.have.lengthOf(12);
-            articles.forEach(article => {
-              if (article.id === 1) {
-                // Check article one has correct count
-                expect(article.comment_count).to.equal('13');
-              }
-              // DOES IT NEED BODY AS THIS IS NORMALLY IN THE ARTICLE
-              // IF NOT HOW TO REMOVE???
-              expect(article).to.have.keys(['author', 'title', 'id', 'topic', 'created_at', 'votes', 'comment_count']);
-            });
           });
       });
       it('GET:200, each article object has appropriate keys', () => {
@@ -100,6 +91,30 @@ describe('app.js', () => {
               }
               expect(article).to.have.keys(['author', 'title', 'id', 'topic', 'created_at', 'votes', 'comment_count']);
             });
+          });
+      });
+      it('GET:200, returns an array of article objects sorted with "created_at" as default sort in descending order', () => {
+        return request(app)
+          .get('/api/articles?sort_by=created_at')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.descendingBy('created_at');
+          });
+      });
+      it('GET:200, array sorts by non-default columns in descending order', () => {
+        return request(app)
+          .get('/api/articles?sort_by=author')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.descendingBy('author');
+          });
+      });
+      it('GET:200, returns an array of article objects sorted with "created_at" as default sort in ascending order', () => {
+        return request(app)
+          .get('/api/articles?order=asc')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.ascendingBy('created_at');
           });
       });
       describe('ERROR /articles', () => {
