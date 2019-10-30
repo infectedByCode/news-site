@@ -482,6 +482,28 @@ describe('app.js', () => {
               expect(comment).to.have.keys(['comment_id', 'author', 'article_id', 'votes', 'created_at', 'body']);
             });
         });
+        it('DELETE:204, returns status code 204 when a valid comment ID is given and deleted.', () => {
+          const comment_id = 1;
+
+          return request(app)
+            .delete(`/api/comments/${comment_id}`)
+            .expect(204);
+        });
+        it('DELETE:204, deleted comment can no longer be found in database.', () => {
+          const id = 1;
+          const articleOfComment = 9;
+          return request(app)
+            .delete(`/api/comments/${id}`)
+            .expect(204)
+            .then(() => {
+              return request(app)
+                .get(`/api/articles/${articleOfComment}/comments`)
+                .then(({ body: { comments } }) => {
+                  const isCommentFound = Boolean(comments.find(comment => comment.comment_id === id));
+                  expect(isCommentFound).to.be.false;
+                });
+            });
+        });
         describe('ERRORS /:comment_id', () => {
           it('PATCH:404, when the comment ID is a valid format but not found', () => {
             const updateReq = { inc_votes: 5 };
@@ -527,6 +549,26 @@ describe('app.js', () => {
               .expect(400)
               .then(({ body: { msg } }) => {
                 expect(msg).to.equal('Please only include { inc_votes: "number" } when using the API');
+              });
+          });
+          it('DELETE:400, when the ID is not a valid data type', () => {
+            const comment_id = 'not-comment-id';
+
+            return request(app)
+              .delete(`/api/comments/${comment_id}`)
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('invalid input syntax for integer: "not-comment-id"');
+              });
+          });
+          it('DELETE 400, when the ID is valid but not found in database', () => {
+            const comment_id = 9999;
+
+            return request(app)
+              .delete(`/api/comments/${comment_id}`)
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal(`Comment with ID "${comment_id}" could not be found.`);
               });
           });
         });
