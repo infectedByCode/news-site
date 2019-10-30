@@ -117,13 +117,23 @@ describe('app.js', () => {
             expect(articles).to.be.ascendingBy('created_at');
           });
       });
-      it.only('GET:200, returns an array of article object filtered by a specified author', () => {
+      it('GET:200, returns an array of article objects filtered by a specified author', () => {
         return request(app)
           .get('/api/articles?author=rogersop')
           .expect(200)
           .then(({ body: { articles } }) => {
             articles.forEach(article => {
               expect(article.author).to.equal('rogersop');
+            });
+          });
+      });
+      it('GET:200, returns an array of article objects filtered by article topic.', () => {
+        return request(app)
+          .get('/api/articles?topic=cats')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            articles.forEach(article => {
+              expect(article.topic).to.equal('cats');
             });
           });
       });
