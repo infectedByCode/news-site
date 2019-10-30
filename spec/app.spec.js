@@ -179,7 +179,7 @@ describe('app.js', () => {
               expect(msg).to.equal('Error 404 - Invalid URL provided.');
             });
         });
-        it('GET:405, when client attempt an illegal method', () => {
+        it('STATUS:405, when client attempt an illegal method', () => {
           const invalidMethods = ['post', 'put', 'patch', 'delete'];
           const methodPromises = invalidMethods.map(method => {
             return request(app)
@@ -294,7 +294,7 @@ describe('app.js', () => {
                 expect(msg).to.equal('Article ID "99999" does not exist.');
               });
           });
-          it('GET:405, when client attempt an illegal method', () => {
+          it('STATUS:405, when client attempt an illegal method', () => {
             const invalidMethods = ['put', 'post', 'delete'];
             const methodPromises = invalidMethods.map(method => {
               return request(app)
@@ -412,7 +412,7 @@ describe('app.js', () => {
                 });
             });
             describe('ERRORS /comments', () => {
-              it('GET:405, when client attempt an illegal method', () => {
+              it('STATUS:405, when client attempt an illegal method', () => {
                 const invalidMethods = ['put', 'patch', 'delete'];
                 const methodPromises = invalidMethods.map(method => {
                   return request(app)
@@ -541,6 +541,18 @@ describe('app.js', () => {
             });
         });
         describe('ERRORS /:comment_id', () => {
+          it('STATUS:405, when client attempt an illegal method', () => {
+            const invalidMethods = ['put', 'get', 'post'];
+            const methodPromises = invalidMethods.map(method => {
+              return request(app)
+                [method]('/api/comments/2')
+                .expect(405)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal('method not allowed');
+                });
+            });
+            return Promise.all(methodPromises);
+          });
           it('PATCH:404, when the comment ID is a valid format but not found', () => {
             const updateReq = { inc_votes: 5 };
             const comment_id = 1999;
