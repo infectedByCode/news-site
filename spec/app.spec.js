@@ -20,12 +20,20 @@ describe('app.js', () => {
   // Testing for endpoints
   describe('/api', () => {
     describe('/topics', () => {
-      it('GET:200, returns an object with all topics in the database.', () => {
+      it('GET:200, returns an array of objects object', () => {
         return request(app)
           .get('/api/topics')
           .expect(200)
           .then(({ body: { topics } }) => {
+            expect(topics).to.be.an('array');
             expect(topics).to.have.lengthOf(3);
+          });
+      });
+      it('GET:200, each object in the array has keys relevant to topics ', () => {
+        return request(app)
+          .get('/api/topics')
+          .expect(200)
+          .then(({ body: { topics } }) => {
             topics.forEach(topic => {
               expect(topic).to.have.keys(['slug', 'description']);
             });
@@ -80,6 +88,20 @@ describe('app.js', () => {
             });
           });
       });
+      it('GET:200, each article object has appropriate keys', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            articles.forEach(article => {
+              if (article.id === 1) {
+                // Check article one has correct count
+                expect(article.comment_count).to.equal('13');
+              }
+              expect(article).to.have.keys(['author', 'title', 'id', 'topic', 'created_at', 'votes', 'comment_count']);
+            });
+          });
+      });
       describe('ERROR /articles', () => {
         it('GET:404, when the URL is invalid', () => {
           return request(app)
@@ -91,7 +113,7 @@ describe('app.js', () => {
         });
       });
       describe('/:article_id', () => {
-        it('GET:200, returns an article object when given a valid article ID.', () => {
+        it('GET:200, returns the correct article object when given a valid article ID.', () => {
           return request(app)
             .get('/api/articles/5')
             .expect(200)
@@ -181,6 +203,13 @@ describe('app.js', () => {
                 .then(({ body: { comments } }) => {
                   expect(comments).to.be.an('array');
                   expect(comments).to.have.lengthOf(13);
+                });
+            });
+            it('GET:200, each comments array should have keys specific to comments', () => {
+              return request(app)
+                .get('/api/articles/1/comments')
+                .expect(200)
+                .then(({ body: { comments } }) => {
                   comments.forEach(comment => {
                     expect(comment).to.have.keys(['comment_id', 'author', 'article_id', 'votes', 'created_at', 'body']);
                   });
@@ -277,7 +306,6 @@ describe('app.js', () => {
                     );
                   });
               });
-              // Possibly Change
               it('POST:400, when article ID given is invalid', () => {
                 const postReq = { username: 'rogersop', body: 'Error handling is fun!' };
 
