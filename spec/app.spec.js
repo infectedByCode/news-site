@@ -186,13 +186,13 @@ describe('app.js', () => {
               expect(msg).to.equal(`No articles can be found by ${author}`);
             });
         });
-        it.only('GET:400, when author given does not exist', () => {
+        it('GET:400, when author given does not exist', () => {
           const author = 'bananaman';
           return request(app)
             .get(`/api/articles?author=${author}`)
             .expect(400)
             .then(({ body: { msg } }) => {
-              expect(msg).to.equal(`No articles can be found by ${author}`);
+              expect(msg).to.equal(`Author "${author}" does not exist.`);
             });
         });
         it('GET:404, when no articles were found with topic given', () => {
