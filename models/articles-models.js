@@ -88,7 +88,7 @@ exports.selectArticles = () => {
       'articles.votes',
       'articles.author'
     )
-    .count('*', { as: 'comment_count' })
+    .count('comments.comment_id', { as: 'comment_count' })
     .leftJoin('comments', 'articles.id', 'comments.article_id')
     .groupBy('articles.id')
     .returning('*');
