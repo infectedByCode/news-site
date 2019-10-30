@@ -6,7 +6,6 @@ const {
   getCommentsByArticleId,
   getArticles
 } = require('../controllers/article-controller');
-const { invalidURLError } = require('../errors');
 
 articleRouter.route('/').get(getArticles);
 
