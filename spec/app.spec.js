@@ -143,12 +143,23 @@ describe('app.js', () => {
           .expect(200)
           .then(({ body: { articles } }) => {
             articles.forEach(article => {
-              expect(article.topic).to.equal('cats');
+              expect(article.topic).to.equal('mitch');
               expect(article.author).to.equal('butter_bridge');
             });
           });
       });
-
+      it('GET:200, returns an array filtered and sorted by non-default values', () => {
+        return request(app)
+          .get('/api/articles?topic=mitch&author=butter_bridge')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.ascendingBy('title');
+            articles.forEach(article => {
+              expect(article.topic).to.equal('mitch');
+              expect(article.author).to.equal('butter_bridge');
+            });
+          });
+      });
       describe('ERROR /articles', () => {
         it('GET:404, when the URL is invalid', () => {
           return request(app)
