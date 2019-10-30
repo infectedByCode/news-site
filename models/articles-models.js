@@ -97,5 +97,11 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic)
       if (author) query.where('articles.author', author);
       if (topic) query.where('articles.topic', topic);
     })
-    .returning('*');
+    .then(query => {
+      // Check if any articles were found. If none, send message with 404, else send data.
+      if (!query.length && author) return Promise.reject({ status: 404, msg: `No articles can be found by ${author}` });
+      if (!query.length && topic)
+        return Promise.reject({ status: 404, msg: `No articles can be found with topic "${topic}"` });
+      return query;
+    });
 };

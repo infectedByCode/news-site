@@ -5,7 +5,6 @@ exports.customErrorHandlers = (err, req, res, next) => {
 };
 
 exports.psqlErrorHandlers = (err, req, res, next) => {
-  console.log(err.code);
   const errRef = {
     '22P02': {
       status: 400,
