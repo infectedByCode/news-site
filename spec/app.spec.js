@@ -117,6 +117,16 @@ describe('app.js', () => {
             expect(articles).to.be.ascendingBy('created_at');
           });
       });
+      it.only('GET:200, returns an array of article object filtered by a specified author', () => {
+        return request(app)
+          .get('/api/articles?author=rogersop')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            articles.forEach(article => {
+              expect(article.author).to.equal('rogersop');
+            });
+          });
+      });
       describe('ERROR /articles', () => {
         it('GET:404, when the URL is invalid', () => {
           return request(app)
