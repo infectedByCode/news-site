@@ -83,6 +83,18 @@ describe('app.js', () => {
           });
       });
       describe('ERRORS', () => {
+        it('STATUS:405, when client attempt an illegal method', () => {
+          const invalidMethods = ['put', 'patch', 'post', 'delete'];
+          const methodPromises = invalidMethods.map(method => {
+            return request(app)
+              [method]('/api/topics')
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('method not allowed');
+              });
+          });
+          return Promise.all(methodPromises);
+        });
         it('GET:404, when username does not exist', () => {
           return request(app)
             .get('/api/users/apple')
