@@ -13,3 +13,15 @@ exports.updateCommentById = (comment_id, votesUpdate, otherData) => {
       else return Promise.resolve(comment);
     });
 };
+
+exports.removeCommentById = comment_id => {
+  return connection('comments')
+    .where({ comment_id })
+    .del()
+    .returning('*')
+    .then(comment => {
+      if (!comment.length)
+        return Promise.reject({ status: 400, msg: `Comment with ID "${comment_id}" could not be found.` });
+      else return Promise.resolve(null);
+    });
+};
