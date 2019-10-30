@@ -19,6 +19,16 @@ describe('app.js', () => {
   });
   // Testing for endpoints
   describe('/api', () => {
+    describe('ERRORS /api', () => {
+      it('GET:404, when URL is invalid enpoint ', () => {
+        return request(app)
+          .get('/api/sdada')
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal('Error 404 - Invalid URL provided.');
+          });
+      });
+    });
     describe('/topics', () => {
       it('GET:200, returns an array of objects object', () => {
         return request(app)
@@ -243,6 +253,16 @@ describe('app.js', () => {
             .expect(201)
             .then(({ body: { article } }) => {
               expect(article.votes).to.equal(123);
+              expect(article).to.have.keys([
+                'author',
+                'title',
+                'id',
+                'body',
+                'topic',
+                'created_at',
+                'votes',
+                'comment_count'
+              ]);
             });
         });
         describe('ERRORS /articles/:article_id', () => {
@@ -395,8 +415,8 @@ describe('app.js', () => {
                     expect(msg).to.equal('null value in column "body" violates not-null constraint');
                   });
               });
-              it('POST:400, when the datatype given is invalid', () => {
-                const postReq = { username: 66, body: { story: 'abc' } };
+              it('POST:400, when the datatype given is invalid for username', () => {
+                const postReq = { username: 66, body: 'Awesome cats' };
 
                 return request(app)
                   .post('/api/articles/1/comments')
@@ -426,16 +446,11 @@ describe('app.js', () => {
         });
       });
     });
-    describe('ERRORS /api', () => {
-      it('GET:404, when URL is invalid enpoint ', () => {
-        return request(app)
-          .get('/api/sdada')
-          .expect(404)
-          .then(({ body: { msg } }) => {
-            expect(msg).to.equal('Error 404 - Invalid URL provided.');
-          });
-      });
-    });
+    // describe('/comments', () => {
+    //   describe('/:comment:id', () => {
+    //     it('', () => {});
+    //   });
+    // });
   });
   describe('ERRORS /*', () => {
     it('GET:404, when invalid URL is given in the root', () => {
