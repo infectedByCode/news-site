@@ -244,13 +244,13 @@ describe('app.js', () => {
               expect(article.comment_count).to.equal('2');
             });
         });
-        it('PATCH:201, returns the updated article when given a valid object of { inc_votes: newVote } is given', () => {
+        it('PATCH:200, returns the updated article when given a valid object of { inc_votes: newVote } is given', () => {
           const updateReq = { inc_votes: 23 };
 
           return request(app)
             .patch('/api/articles/1')
             .send(updateReq)
-            .expect(201)
+            .expect(200)
             .then(({ body: { article } }) => {
               expect(article.votes).to.equal(123);
               expect(article).to.have.keys([
@@ -448,16 +448,40 @@ describe('app.js', () => {
     });
     describe('/comments', () => {
       describe('/:comment:id', () => {
-        it('PATCH:201, returns the updated comment', () => {
+        it('PATCH:200, returns the updated comment vote', () => {
           const updateReq = { inc_votes: 5 };
 
           return request(app)
             .patch('/api/comments/1')
             .send(updateReq)
-            .expect(201)
+            .expect(200)
             .then(({ body: { comment } }) => {
               expect(comment.votes).to.equal(21);
             });
+        });
+        it('PATCH:200, retains updated comment in full with relevant keys', () => {
+          const updateReq = { inc_votes: 5 };
+
+          return request(app)
+            .patch('/api/comments/1')
+            .send(updateReq)
+            .expect(200)
+            .then(({ body: { comment } }) => {
+              expect(comment).to.have.keys(['comment_id', 'author', 'article_id', 'votes', 'created_at', 'body']);
+            });
+        });
+        describe('ERRORS /:comment_id', () => {
+          it('PATCH:404, when the comment ID is a valid format but not found', () => {
+            const updateReq = { inc_votes: 5 };
+
+            return request(app)
+              .patch('/api/comments/1999')
+              .send(updateReq)
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('');
+              });
+          });
         });
       });
     });
