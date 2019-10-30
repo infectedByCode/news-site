@@ -4,6 +4,4 @@ const { invalidURLError } = require('../errors');
 
 topicRouter.route('/').get(getTopics);
 
-topicRouter.get('/*', invalidURLError);
-
 module.exports = topicRouter;

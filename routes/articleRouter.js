@@ -20,6 +20,4 @@ articleRouter
   .get(getArticleById)
   .patch(patchArticleById);
 
-articleRouter.get('/*', invalidURLError);
-
 module.exports = articleRouter;

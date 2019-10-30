@@ -8,6 +8,4 @@ apiRouter.use('/topics', topicRouter);
 apiRouter.use('/users', userRouter);
 apiRouter.use('/articles', articleRouter);
 
-apiRouter.get('/*', invalidURLError);
-
 module.exports = apiRouter;

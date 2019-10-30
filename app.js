@@ -6,7 +6,7 @@ const { customErrorHandlers, psqlErrorHandlers, invalidURLError } = require('./e
 app.use(express.json());
 
 app.use('/api', apiRouter);
-app.get('/*', invalidURLError);
+app.all('/*', invalidURLError);
 
 app.use(customErrorHandlers);
 app.use(psqlErrorHandlers);
