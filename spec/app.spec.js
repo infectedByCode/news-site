@@ -1,6 +1,5 @@
 process.env.NODE_ENV = 'test';
 
-const fs = require('fs');
 const chai = require('chai');
 const expect = chai.expect;
 const request = require('supertest');
@@ -81,6 +80,24 @@ describe('app.js', () => {
             });
           });
       });
+      it('GET:200, returns an array of topic objects limited by given query', () => {
+        return request(app)
+          .get('/api/topics?limit=2')
+          .expect(200)
+          .then(({ body: { topics } }) => {
+            expect(topics).to.be.lengthOf(2);
+          });
+      });
+      it('GET:200, returns an array of article objects for given page with limit of 2', () => {
+        return request(app)
+          .get('/api/topics?limit=2&p=2')
+          .expect(200)
+          .then(({ body: { topics } }) => {
+            expect(topics).to.be.lengthOf(1);
+            const firstTopic = topics[0];
+            expect(firstTopic.slug).to.equal('paper');
+          });
+      });
       describe('ERRORS /topics', () => {
         it('GET:404, when the client uses incorrect URL', () => {
           return request(app)
@@ -146,14 +163,12 @@ describe('app.js', () => {
       });
     });
     describe('/articles', () => {
-      it.only('GET:200, returns an array of article objects', () => {
+      it('GET:200, returns an array of article objects', () => {
         return request(app)
           .get('/api/articles')
           .expect(200)
           .then(({ body: { articles } }) => {
-            console.log(articles[0].id === 1);
             expect(articles).to.be.an('array');
-            expect(articles).to.have.lengthOf(12);
           });
       });
       it('GET:200, each article object has appropriate keys', () => {
@@ -168,6 +183,34 @@ describe('app.js', () => {
               }
               expect(article).to.have.keys(['author', 'title', 'id', 'topic', 'created_at', 'votes', 'comment_count']);
             });
+          });
+      });
+      it('GET:200, returns an array of article objects limited by given query', () => {
+        return request(app)
+          .get('/api/articles?limit=2')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.lengthOf(2);
+          });
+      });
+      it('GET:200, returns an array of article objects for given page with default limit of 10', () => {
+        return request(app)
+          .get('/api/articles?p=2')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.lengthOf(2);
+            const firstArticle = articles[0];
+            expect(firstArticle.id).to.equal(11);
+          });
+      });
+      it('GET:200, works with both limit and page numbers', () => {
+        return request(app)
+          .get('/api/articles?p=2&limit=5')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.lengthOf(5);
+            const firstArticle = articles[0];
+            expect(firstArticle.id).to.equal(6);
           });
       });
       it('GET:200, returns an array of article objects sorted with "created_at" as default sort in descending order', () => {

@@ -75,7 +75,7 @@ exports.selectCommentsByArticleId = (article_id, sort_by = 'created_at', order =
     });
 };
 
-exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic) => {
+exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic, limit = 10, p = 1) => {
   return connection('articles')
     .select(
       'articles.id',
@@ -94,6 +94,8 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic)
       if (author) query.where('articles.author', author);
       if (topic) query.where('articles.topic', topic);
     })
+    .limit(limit)
+    .offset(limit * (p - 1))
     .then(query => {
       // Check if any articles were found.
       // If none, checks where author/topic is valid and sends 400 or 404 dependingly.
