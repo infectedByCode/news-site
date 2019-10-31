@@ -19,6 +19,14 @@ describe('app.js', () => {
   });
   // Testing for endpoints
   describe('/api', () => {
+    it('GET:200, returns a JSON object of all endpoints available to the client.', () => {
+      return request(app)
+        .get('/api')
+        .expect(200)
+        .then(({ body: { msg } }) => {
+          /// NEED TO DO ///
+        });
+    });
     describe('ERRORS /api', () => {
       it('GET:404, when URL is invalid enpoint ', () => {
         return request(app)
