@@ -169,6 +169,7 @@ describe('app.js', () => {
           .expect(200)
           .then(({ body: { articles } }) => {
             expect(articles).to.be.an('array');
+            expect(articles[0]['id']).to.equal(1);
           });
       });
       it('GET:200, each article object has appropriate keys', () => {
