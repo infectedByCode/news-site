@@ -76,50 +76,48 @@ exports.selectCommentsByArticleId = (article_id, sort_by = 'created_at', order =
 };
 
 exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic, limit = 10, p = 1) => {
-  return (
-    connection('articles')
-      .select(
-        'articles.id',
-        'articles.title',
-        'articles.topic',
-        'articles.created_at',
-        'articles.votes',
-        'articles.author'
-      )
-      .count('comments.comment_id', { as: 'comment_count' })
-      .leftJoin('comments', 'articles.id', 'comments.article_id')
-      .groupBy('articles.id')
-      .orderBy(sort_by, order)
-      .modify(query => {
-        if (author && topic) query.where('articles.author', author).andWhere('articles.topic', topic);
-        if (author) query.where('articles.author', author);
-        if (topic) query.where('articles.topic', topic);
-      })
-      // .modify(query => {
-      //   if (limit || p) query.limit(limit).offset(limit * (p - 1));
-      // })
-      .then(query => {
-        // Check if any articles were found.
-        // If none, checks where author/topic is valid and sends 400 or 404 dependingly.
-        if (!query.length && author) {
-          return connection('users')
-            .select('*')
-            .where('users.username', '=', author)
-            .then(query => {
-              if (!query.length) return Promise.reject({ status: 404, msg: `Author "${author}" does not exist.` });
-              else return Promise.resolve([]);
-            });
-        }
-        if (!query.length && topic) {
-          return connection('topics')
-            .select('*')
-            .where('topics.slug', '=', topic)
-            .then(query => {
-              if (!query.length) return Promise.reject({ status: 404, msg: `Topic "${topic}" does not exist.` });
-              else return Promise.resolve([]);
-            });
-        }
-        return query;
-      })
-  );
+  return connection('articles')
+    .select(
+      'articles.id',
+      'articles.title',
+      'articles.topic',
+      'articles.created_at',
+      'articles.votes',
+      'articles.author'
+    )
+    .count('comments.comment_id', { as: 'comment_count' })
+    .leftJoin('comments', 'articles.id', 'comments.article_id')
+    .groupBy('articles.id')
+    .orderBy(sort_by, order)
+    .modify(query => {
+      if (author && topic) query.where('articles.author', author).andWhere('articles.topic', topic);
+      if (author) query.where('articles.author', author);
+      if (topic) query.where('articles.topic', topic);
+    })
+    .modify(query => {
+      if (limit || p) query.limit(limit).offset(limit * (p - 1));
+    })
+    .then(query => {
+      // Check if any articles were found.
+      // If none, checks where author/topic is valid and sends 400 or 404 dependingly.
+      if (!query.length && author) {
+        return connection('users')
+          .select('*')
+          .where('users.username', '=', author)
+          .then(query => {
+            if (!query.length) return Promise.reject({ status: 404, msg: `Author "${author}" does not exist.` });
+            else return Promise.resolve([]);
+          });
+      }
+      if (!query.length && topic) {
+        return connection('topics')
+          .select('*')
+          .where('topics.slug', '=', topic)
+          .then(query => {
+            if (!query.length) return Promise.reject({ status: 404, msg: `Topic "${topic}" does not exist.` });
+            else return Promise.resolve([]);
+          });
+      }
+      return query;
+    });
 };
