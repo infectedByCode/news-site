@@ -146,11 +146,12 @@ describe('app.js', () => {
       });
     });
     describe('/articles', () => {
-      it('GET:200, returns an array of article objects', () => {
+      it.only('GET:200, returns an array of article objects', () => {
         return request(app)
           .get('/api/articles')
           .expect(200)
           .then(({ body: { articles } }) => {
+            console.log(articles[0].id === 1);
             expect(articles).to.be.an('array');
             expect(articles).to.have.lengthOf(12);
           });
@@ -213,6 +214,24 @@ describe('app.js', () => {
             });
           });
       });
+      it('GET:200, when no articles were found by given author when author exists', () => {
+        const author = 'lurker';
+        return request(app)
+          .get(`/api/articles?author=${author}`)
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.eql([]);
+          });
+      });
+      it('GET:200, when no articles were found with topic given', () => {
+        const topic = 'paper';
+        return request(app)
+          .get(`/api/articles?topic=${topic}`)
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.eql([]);
+          });
+      });
       it('GET:200, returns an array of article objects filtered by article topic and author.', () => {
         return request(app)
           .get('/api/articles?topic=mitch&author=butter_bridge')
@@ -265,44 +284,36 @@ describe('app.js', () => {
               expect(msg).to.equal('column "cars" does not exist. Please sort_by a different column.');
             });
         });
-        it('GET:404, when no articles were found by given author when author exists', () => {
-          const author = 'lurker';
-          return request(app)
-            .get(`/api/articles?author=${author}`)
-            .expect(404)
-            .then(({ body: { msg } }) => {
-              expect(msg).to.equal(`No articles can be found by "${author}".`);
-            });
-        });
-        it('GET:400, when author given does not exist', () => {
+
+        it('GET:404, when author given does not exist', () => {
           const author = 'bananaman';
           return request(app)
             .get(`/api/articles?author=${author}`)
-            .expect(400)
+            .expect(404)
+
             .then(({ body: { msg } }) => {
               expect(msg).to.equal(`Author "${author}" does not exist.`);
             });
         });
-        it('GET:404, when no articles were found with topic given', () => {
-          const topic = 'paper';
-          return request(app)
-            .get(`/api/articles?topic=${topic}`)
-            .expect(404)
-            .then(({ body: { msg } }) => {
-              expect(msg).to.equal(`No articles can be found with topic "${topic}".`);
-            });
-        });
-        it('GET:400, when topic does not exist', () => {
+        it('GET:404, when topic does not exist', () => {
           const topic = 'linux';
           return request(app)
             .get(`/api/articles?topic=${topic}`)
-            .expect(400)
+            .expect(404)
             .then(({ body: { msg } }) => {
               expect(msg).to.equal(`Topic "${topic}" does not exist.`);
             });
         });
       });
       describe('/:article_id', () => {
+        it('GET:200, returns an oject that contains relevant keys', () => {
+          return request(app)
+            .get('/api/articles/1')
+            .expect(200)
+            .then(({ body: { article } }) => {
+              expect(article).to.contain.keys(['author', 'title', 'id', 'body', 'topic', 'created_at', 'votes']);
+            });
+        });
         it('GET:200, returns the correct article object when given a valid article ID.', () => {
           return request(app)
             .get('/api/articles/5')
@@ -343,6 +354,27 @@ describe('app.js', () => {
               ]);
             });
         });
+        it('PATCH:200, when the body does not contain inc_votes.', () => {
+          const updateReq = {};
+
+          return request(app)
+            .patch('/api/articles/1')
+            .send(updateReq)
+            .expect(200)
+            .then(({ body: { article } }) => {
+              expect(article.votes).to.equal(100);
+              expect(article).to.have.keys([
+                'author',
+                'title',
+                'id',
+                'body',
+                'topic',
+                'created_at',
+                'votes',
+                'comment_count'
+              ]);
+            });
+        });
         describe('ERRORS /articles/:article_id', () => {
           it('GET:400, when article ID is incorrect data type', () => {
             return request(app)
@@ -371,17 +403,6 @@ describe('app.js', () => {
                 });
             });
             return Promise.all(methodPromises);
-          });
-          it('PATCH:400, when the body does not contain inc_votes.', () => {
-            const updateReq = {};
-
-            return request(app)
-              .patch('/api/articles/1')
-              .send(updateReq)
-              .expect(400)
-              .then(({ body: { msg } }) => {
-                expect(msg).to.equal('Missing or incorrect data provided for article "1".');
-              });
           });
           it('PATCH:400, when the inc_votes is not a valid data type, i.e. number', () => {
             const updateReq = { inc_votes: 'potato' };
@@ -427,12 +448,12 @@ describe('app.js', () => {
                   });
                 });
             });
-            it('GET:200, returns a message when there are no comments for a found article', () => {
+            it('GET:200, returns an empty array when there are no comments for a found article', () => {
               return request(app)
                 .get('/api/articles/2/comments')
                 .expect(200)
-                .then(({ body: { msg } }) => {
-                  expect(msg).to.equal('Unfortunately, no comments have been made about this article.');
+                .then(({ body: { comments } }) => {
+                  expect(comments).to.eql([]);
                 });
             });
             it('GET:200, returns correctly sorted array of comments with default sort being created_at with default order of descending', () => {
@@ -530,13 +551,13 @@ describe('app.js', () => {
                     );
                   });
               });
-              it('POST:400, when article ID given is invalid', () => {
+              it('POST:404, when article ID given is invalid', () => {
                 const postReq = { username: 'rogersop', body: 'Error handling is fun!' };
 
                 return request(app)
                   .post('/api/articles/99999/comments')
                   .send(postReq)
-                  .expect(400)
+                  .expect(404)
                   .then(({ body: { msg } }) => {
                     expect(msg).to.equal(
                       'insert or update on table "comments" violates foreign key constraint "comments_article_id_foreign"'
@@ -582,6 +603,17 @@ describe('app.js', () => {
             .then(({ body: { comment } }) => {
               expect(comment.votes).to.equal(16);
               expect(comment).to.have.keys(['comment_id', 'author', 'article_id', 'votes', 'created_at', 'body']);
+            });
+        });
+        it('PATCH:200, returns the unchanged comment when inc_votes is missing', () => {
+          const updateReq = {};
+
+          return request(app)
+            .patch('/api/comments/1')
+            .send(updateReq)
+            .expect(200)
+            .then(({ body: { comment } }) => {
+              expect(comment.votes).to.equal(16);
             });
         });
         it('DELETE:204, returns status code 204 when a valid comment ID is given and deleted.', () => {
@@ -675,12 +707,12 @@ describe('app.js', () => {
                 expect(msg).to.equal('invalid input syntax for integer: "not-comment-id"');
               });
           });
-          it('DELETE 400, when the ID is valid but not found in database', () => {
+          it('DELETE 404, when the ID is valid but not found in database', () => {
             const comment_id = 9999;
 
             return request(app)
               .delete(`/api/comments/${comment_id}`)
-              .expect(400)
+              .expect(404)
               .then(({ body: { msg } }) => {
                 expect(msg).to.equal(`Comment with ID "${comment_id}" could not be found.`);
               });

@@ -1,6 +1,6 @@
 const connection = require('../db/connection');
 
-exports.updateCommentById = (comment_id, votesUpdate, otherData) => {
+exports.updateCommentById = (comment_id, votesUpdate = 0, otherData) => {
   if (Object.keys(otherData).length)
     return Promise.reject({ status: 400, msg: 'Please only include { inc_votes: "number" } when using the API' });
 
@@ -21,7 +21,7 @@ exports.removeCommentById = comment_id => {
     .returning('*')
     .then(comment => {
       if (!comment.length)
-        return Promise.reject({ status: 400, msg: `Comment with ID "${comment_id}" could not be found.` });
+        return Promise.reject({ status: 404, msg: `Comment with ID "${comment_id}" could not be found.` });
       else return Promise.resolve(null);
     });
 };

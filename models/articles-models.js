@@ -14,10 +14,10 @@ exports.selectArticleById = article_id => {
     });
 };
 
-exports.updateArticleById = (id, data) => {
-  const { inc_votes, ...otherData } = data;
+exports.updateArticleById = (id, inc_votes = 0, data) => {
+  const { ...otherData } = data;
   // Error handling for bad data requests
-  if (!inc_votes || typeof inc_votes !== 'number') {
+  if (typeof inc_votes !== 'number') {
     return Promise.reject({ status: 400, msg: `Missing or incorrect data provided for article "${id}".` });
   }
 
@@ -45,6 +45,12 @@ exports.updateArticleById = (id, data) => {
 exports.createCommentByArticleId = (article_id, data) => {
   const { body, username } = data;
 
+  if (typeof username !== 'string')
+    return Promise.reject({
+      status: 400,
+      msg: 'insert or update on table "comments" violates foreign key constraint "comments_author_foreign"'
+    });
+
   return connection('comments')
     .insert({
       article_id,
@@ -65,15 +71,7 @@ exports.selectCommentsByArticleId = (article_id, sort_by = 'created_at', order =
           .select('*')
           .where({ article_id })
           .orderBy(sort_by, order)
-          .returning('*')
-          .then(comments => {
-            if (!comments.length)
-              return Promise.reject({
-                status: 200,
-                msg: 'Unfortunately, no comments have been made about this article.'
-              });
-            else return comments;
-          });
+          .returning('*');
     });
 };
 
@@ -104,8 +102,8 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic)
           .select('*')
           .where('users.username', '=', author)
           .then(query => {
-            if (!query.length) return Promise.reject({ status: 400, msg: `Author "${author}" does not exist.` });
-            else return Promise.reject({ status: 404, msg: `No articles can be found by "${author}".` });
+            if (!query.length) return Promise.reject({ status: 404, msg: `Author "${author}" does not exist.` });
+            else return Promise.resolve([]);
           });
       }
       if (!query.length && topic) {
@@ -113,8 +111,8 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic)
           .select('*')
           .where('topics.slug', '=', topic)
           .then(query => {
-            if (!query.length) return Promise.reject({ status: 400, msg: `Topic "${topic}" does not exist.` });
-            else return Promise.reject({ status: 404, msg: `No articles can be found with topic "${topic}".` });
+            if (!query.length) return Promise.reject({ status: 404, msg: `Topic "${topic}" does not exist.` });
+            else return Promise.resolve([]);
           });
       }
       return query;
