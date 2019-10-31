@@ -90,12 +90,24 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic,
     .groupBy('articles.id')
     .orderBy(sort_by, order)
     .modify(query => {
-      if (author && topic) query.where('articles.author', author).andWhere('articles.topic', topic);
-      if (author) query.where('articles.author', author);
-      if (topic) query.where('articles.topic', topic);
+      if (author && topic)
+        query
+          .where('articles.author', author)
+          .andWhere('articles.topic', topic)
+          .limit(limit)
+          .offset(limit * (p - 1));
+      if (author)
+        query
+          .where('articles.author', author)
+          .limit(limit)
+          .offset(limit * (p - 1));
+      if (topic)
+        query
+          .where('articles.topic', topic)
+          .limit(limit)
+          .offset(limit * (p - 1));
+      else query.limit(limit).offset(limit * (p - 1));
     })
-    .limit(limit)
-    .offset(limit * (p - 1))
     .then(query => {
       // Check if any articles were found.
       // If none, checks where author/topic is valid and sends 400 or 404 dependingly.
