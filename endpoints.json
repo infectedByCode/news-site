@@ -23,5 +23,91 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an article object with information about given article",
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Running a Node App",
+        "author": "jessjelly",
+        "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        "topic": "coding",
+        "created_at": 1471522072389,
+        "votes": 0,
+        "comment_count": 3
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates votes on a specified article and serves the updated article",
+    "queries": [],
+    "examplePatchData": { "inc_votes": 5 },
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Running a Node App",
+        "author": "jessjelly",
+        "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        "topic": "coding",
+        "created_at": 1471522072389,
+        "votes": 0,
+        "comment_count": 8
+      }
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "create a new comment for a specific article and serves it up",
+    "queries": [],
+    "examplePostData": { "username": "rogersop", "body": "Error handling is fun!" },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 15,
+        "author": "rogersop",
+        "body": "Error handling is fun!",
+        "article_id": 5,
+        "votes": 0,
+        "created_at": 1471522072389
+      }
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves up rticle and serves it up",
+    "queries": ["sort_by", "order"],
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 15,
+        "author": "rogersop",
+        "body": "Error handling is fun!",
+        "article_id": 5,
+        "votes": 0,
+        "created_at": 1471522072389
+      }
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates a comments votes and serves up the updated comment",
+    "queries": [],
+    "examplePatchData": {
+      "inc_votes": 5
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 15,
+        "author": "rogersop",
+        "body": "Error handling is fun!",
+        "article_id": 5,
+        "votes": 5,
+        "created_at": 1471522072389
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "removes a comment by its ID",
+    "queries": [],
+    "exampleResponse": {
+      "status": 204
+    }
   }
 }

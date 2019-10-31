@@ -1,5 +1,6 @@
 process.env.NODE_ENV = 'test';
 
+const fs = require('fs');
 const chai = require('chai');
 const expect = chai.expect;
 const request = require('supertest');
@@ -23,8 +24,19 @@ describe('app.js', () => {
       return request(app)
         .get('/api')
         .expect(200)
-        .then(({ body: { msg } }) => {
-          /// NEED TO DO ///
+        .then(({ body: { api } }) => {
+          expect(api).to.be.an('object');
+          expect(api).to.have.keys([
+            'GET /api',
+            'GET /api/topics',
+            'GET /api/articles',
+            'GET /api/articles/:article_id',
+            'PATCH /api/articles/:article_id',
+            'POST /api/articles/:article_id/comments',
+            'GET /api/articles/:article_id/comments',
+            'PATCH /api/comments/:comment_id',
+            'DELETE /api/comments/:comment_id'
+          ]);
         });
     });
     describe('ERRORS /api', () => {
@@ -35,6 +47,18 @@ describe('app.js', () => {
           .then(({ body: { msg } }) => {
             expect(msg).to.equal('Error 404 - Invalid URL provided.');
           });
+      });
+      it('STATUS:405, when client attempt an illegal method', () => {
+        const invalidMethods = ['put', 'patch', 'post', 'delete'];
+        const methodPromises = invalidMethods.map(method => {
+          return request(app)
+            [method]('/api')
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('method not allowed');
+            });
+        });
+        return Promise.all(methodPromises);
       });
     });
     describe('/topics', () => {
