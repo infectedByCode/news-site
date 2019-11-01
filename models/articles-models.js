@@ -90,9 +90,9 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic,
     .groupBy('articles.id')
     .orderBy(sort_by, order)
     .modify(query => {
-      if (author && topic) query.where('articles.author', author).andWhere('articles.topic', topic);
+      if (author && topic) query.where('articles.author', author).andWhere('articles.topic', 'like', `%${topic}%`);
       if (author) query.where('articles.author', author);
-      if (topic) query.where('articles.topic', 'like', `%${topic.toLowerCase()}%`);
+      if (topic) query.where('articles.topic', 'like', `%${topic}%`);
     })
     .modify(query => {
       if (limit || p) query.limit(limit).offset(limit * (p - 1));
@@ -110,9 +110,10 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic,
           });
       }
       if (!query.length && topic) {
+        console.log(topic.toLowerCase());
         return connection('topics')
           .select('*')
-          .where('topics.slug', 'like', `%${topic.toLowerCase()}%`)
+          .where('topics.slug', 'like', `%${topic}%`)
           .then(query => {
             if (!query.length) return Promise.reject({ status: 404, msg: `Topic "${topic}" does not exist.` });
             else return Promise.resolve([]);
