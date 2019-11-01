@@ -419,6 +419,31 @@ describe('app.js', () => {
               ]);
             });
         });
+        it('DELETE:204, deletes an article by the given article ID and returns a 204.', () => {
+          return request(app)
+            .delete('/api/articles/1')
+            .expect(204);
+        });
+        it('DELETE:204, the article is removed from the database.', () => {
+          return request(app)
+            .delete('/api/articles/1')
+            .expect(204)
+            .then(() => {
+              return request(app)
+                .get('/api/articles/1')
+                .expect(404);
+            });
+        });
+        it('DELETE:204, removes all associated comments of deleted article', () => {
+          return request(app)
+            .delete('/api/articles/1')
+            .expect(204)
+            .then(() => {
+              return request(app)
+                .get('/api/articles/1/comments')
+                .expect(404);
+            });
+        });
         describe('ERRORS /articles/:article_id', () => {
           it('GET:400, when article ID is incorrect data type', () => {
             return request(app)
@@ -437,7 +462,7 @@ describe('app.js', () => {
               });
           });
           it('STATUS:405, when client attempt an illegal method', () => {
-            const invalidMethods = ['put', 'post', 'delete'];
+            const invalidMethods = ['put', 'post'];
             const methodPromises = invalidMethods.map(method => {
               return request(app)
                 [method]('/api/articles/5')
