@@ -497,6 +497,22 @@ describe('app.js', () => {
                 );
               });
           });
+          it('DELETE:404, when a user tries to delete an article that is valid but not found', () => {
+            const article_id = 9999;
+
+            return request(app)
+              .delete(`/api/articles/${article_id}`)
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal(`Article "${article_id}" cannot be found.`);
+              });
+          });
+          it('DELETE:404, when the user enters an article that is invalid', () => {
+            return request(app)
+              .delete('/api/articles/not-a-number')
+              .expect(400)
+              .then(({ body: { msg } }) => expect(msg).to.equal('invalid input syntax for integer: "not-a-number"'));
+          });
           describe('/comments', () => {
             it('GET:200, returns an array of comments for a given article ID that is valid', () => {
               return request(app)
