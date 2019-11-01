@@ -292,6 +292,16 @@ describe('app.js', () => {
             });
           });
       });
+      it.only('GET:200, returns an array of article objects filtered by article topic regardless of case.', () => {
+        return request(app)
+          .get('/api/articles?topic=CaTs')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            articles.forEach(article => {
+              expect(article.topic).to.equal('cats');
+            });
+          });
+      });
       it('GET:200, returns an array of article objected filtered by a topic with multiple words', () => {
         return request(app)
           .get('/api/articles?topic=Hong Kong')
