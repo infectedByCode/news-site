@@ -125,5 +125,8 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic,
 exports.removeArticleById = article_id => {
   return connection('articles')
     .del()
-    .where('id', '=', article_id);
+    .where('id', '=', article_id)
+    .then(deleteCount => {
+      if (!deleteCount) return Promise.reject({ status: 404, msg: `Article "${article_id}" cannot be found.` });
+    });
 };
