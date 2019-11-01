@@ -98,6 +98,19 @@ describe('app.js', () => {
             expect(firstTopic.slug).to.equal('paper');
           });
       });
+      it('POST:201, returns the new topic.', () => {
+        const postRequest = { slug: 'code', description: 'All the wonders of life in code.' };
+
+        return request(app)
+          .post('/api/topics')
+          .send(postRequest)
+          .expect(201)
+          .then(({ body: { topic } }) => {
+            expect(topic[0]).to.have.keys(['slug', 'description']);
+            expect(topic[0].slug).to.equal('code');
+            expect(topic[0].description).to.equal('All the wonders of life in code.');
+          });
+      });
       describe('ERRORS /topics', () => {
         it('GET:404, when the client uses incorrect URL', () => {
           return request(app)
@@ -108,7 +121,7 @@ describe('app.js', () => {
             });
         });
         it('STATUS:405, when client attempt an illegal method', () => {
-          const invalidMethods = ['put', 'patch', 'post', 'delete'];
+          const invalidMethods = ['put', 'patch', 'delete'];
           const methodPromises = invalidMethods.map(method => {
             return request(app)
               [method]('/api/topics')
@@ -118,6 +131,28 @@ describe('app.js', () => {
               });
           });
           return Promise.all(methodPromises);
+        });
+        it("POST:400, then the user doesn't include all data", () => {
+          const postRequest = { slug: 'code' };
+
+          return request(app)
+            .post('/api/topics')
+            .send(postRequest)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('null value in column "description" violates not-null constraint');
+            });
+        });
+        it("POST:400, then the user doesn't include all data", () => {
+          const postRequest = { slug: 'code', description: 'Very good topic', otherStuff: 'Please remove' };
+
+          return request(app)
+            .post('/api/topics')
+            .send(postRequest)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('Please only include slug and description.');
+            });
         });
       });
     });
@@ -136,7 +171,7 @@ describe('app.js', () => {
           const invalidMethods = ['put', 'patch', 'post', 'delete'];
           const methodPromises = invalidMethods.map(method => {
             return request(app)
-              [method]('/api/topics')
+              [method]('/api/users/apple')
               .expect(405)
               .then(({ body: { msg } }) => {
                 expect(msg).to.equal('method not allowed');
