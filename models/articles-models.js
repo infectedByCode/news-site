@@ -90,36 +90,36 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic,
     .groupBy('articles.id')
     .orderBy(sort_by, order)
     .modify(query => {
-      if (author && topic) query.where('articles.author', author).andWhere('articles.topic', 'like', `%${topic}%`);
       if (author) query.where('articles.author', author);
       if (topic) query.where('articles.topic', 'like', `%${topic}%`);
-    })
-    .modify(query => {
       if (limit || p) query.limit(limit).offset(limit * (p - 1));
     })
-    .then(query => {
-      // Check if any articles were found.
-      // If none, checks where author/topic is valid and sends 400 or 404 dependingly.
-      if (!query.length && author) {
-        return connection('users')
+    .then(articles => {
+      let authorPromise = true;
+      let topicPromise = true;
+
+      if (!articles.length && author) {
+        authorPromise = connection('users')
           .select('*')
-          .where('users.username', '=', author)
-          .then(query => {
-            if (!query.length) return Promise.reject({ status: 404, msg: `Author "${author}" does not exist.` });
-            else return Promise.resolve([]);
-          });
+          .where('users.username', '=', author);
       }
-      if (!query.length && topic) {
-        console.log(topic.toLowerCase());
-        return connection('topics')
+
+      if (!articles.length && topic) {
+        topicPromise = connection('topics')
           .select('*')
-          .where('topics.slug', 'like', `%${topic}%`)
-          .then(query => {
-            if (!query.length) return Promise.reject({ status: 404, msg: `Topic "${topic}" does not exist.` });
-            else return Promise.resolve([]);
-          });
+          .where('topics.slug', 'like', `%${topic}%`);
       }
-      return query;
+
+      return Promise.all([articles, authorPromise, topicPromise]);
+    })
+    .then(PromiseData => {
+      if (PromiseData[1].length === 0 && PromiseData[2].length === 0)
+        return Promise.reject({ status: 404, msg: 'Author and topic do not exist.' });
+      else if (PromiseData[1].length === 0 && PromiseData[2].length === undefined)
+        return Promise.reject({ status: 404, msg: 'Author does not exist.' });
+      else if (PromiseData[1].length === undefined && PromiseData[2].length === 0)
+        return Promise.reject({ status: 404, msg: 'Topic does not exist.' });
+      else return PromiseData[0];
     });
 };
 

@@ -414,7 +414,7 @@ describe('app.js', () => {
             .expect(404)
 
             .then(({ body: { msg } }) => {
-              expect(msg).to.equal(`Author "${author}" does not exist.`);
+              expect(msg).to.equal(`Author does not exist.`);
             });
         });
         it('GET:404, when topic does not exist', () => {
@@ -423,7 +423,15 @@ describe('app.js', () => {
             .get(`/api/articles?topic=${topic}`)
             .expect(404)
             .then(({ body: { msg } }) => {
-              expect(msg).to.equal(`Topic "${topic}" does not exist.`);
+              expect(msg).to.equal(`Topic does not exist.`);
+            });
+        });
+        it('GET:404, when both author and topic do not exist', () => {
+          return request(app)
+            .get('/api/articles?topic=linux&author=bananaman')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('Author and topic do not exist.');
             });
         });
         it('POST:400, when client tries to insert any other data than required.', () => {
