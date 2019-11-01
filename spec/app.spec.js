@@ -67,7 +67,6 @@ describe('app.js', () => {
           .expect(200)
           .then(({ body: { topics } }) => {
             expect(topics).to.be.an('array');
-            expect(topics).to.have.lengthOf(3);
           });
       });
       it('GET:200, each object in the array has keys relevant to topics ', () => {
@@ -93,7 +92,7 @@ describe('app.js', () => {
           .get('/api/topics?limit=2&p=2')
           .expect(200)
           .then(({ body: { topics } }) => {
-            expect(topics).to.be.lengthOf(1);
+            expect(topics).to.be.lengthOf(2);
             const firstTopic = topics[0];
             expect(firstTopic.slug).to.equal('paper');
           });
@@ -291,6 +290,14 @@ describe('app.js', () => {
             articles.forEach(article => {
               expect(article.topic).to.equal('cats');
             });
+          });
+      });
+      it('GET:200, returns an array of article objected filtered by a topic with multiple words', () => {
+        return request(app)
+          .get('/api/articles?topic=Hong Kong')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.eql([]);
           });
       });
       it('GET:200, when no articles were found by given author when author exists', () => {
