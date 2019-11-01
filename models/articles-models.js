@@ -121,3 +121,9 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic,
       return query;
     });
 };
+
+exports.removeArticleById = article_id => {
+  return connection('articles')
+    .del()
+    .where('id', '=', article_id);
+};
