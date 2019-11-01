@@ -92,7 +92,7 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic,
     .modify(query => {
       if (author && topic) query.where('articles.author', author).andWhere('articles.topic', topic);
       if (author) query.where('articles.author', author);
-      if (topic) query.where('articles.topic', 'like', `%${topic}%`);
+      if (topic) query.where('articles.topic', topic);
     })
     .modify(query => {
       if (limit || p) query.limit(limit).offset(limit * (p - 1));
@@ -112,7 +112,7 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic,
       if (!query.length && topic) {
         return connection('topics')
           .select('*')
-          .where('topics.slug', 'like', `%${topic}$`)
+          .where('topics.slug', '=', topic)
           .then(query => {
             if (!query.length) return Promise.reject({ status: 404, msg: `Topic "${topic}" does not exist.` });
             else return Promise.resolve([]);
