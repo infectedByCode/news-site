@@ -112,7 +112,7 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic,
       if (!query.length && topic) {
         return connection('topics')
           .select('*')
-          .where('topics.slug', '=', topic)
+          .where('topics.slug', 'like', `%${topic}$`)
           .then(query => {
             if (!query.length) return Promise.reject({ status: 404, msg: `Topic "${topic}" does not exist.` });
             else return Promise.resolve([]);
