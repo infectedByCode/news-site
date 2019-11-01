@@ -92,7 +92,7 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic,
     .modify(query => {
       if (author && topic) query.where('articles.author', author).andWhere('articles.topic', topic);
       if (author) query.where('articles.author', author);
-      if (topic) query.where('articles.topic', topic);
+      if (topic) query.where('articles.topic', 'like', `%${topic}%`);
     })
     .modify(query => {
       if (limit || p) query.limit(limit).offset(limit * (p - 1));
