@@ -132,7 +132,10 @@ exports.removeArticleById = article_id => {
 };
 
 exports.createArticle = articleData => {
-  const { title, body, author, topic } = articleData;
+  const { title, body, author, topic, ...otherData } = articleData;
+
+  if (Object.keys(otherData).length)
+    return Promise.reject({ status: 400, msg: 'Please only include title, body, author and topic in your request.' });
 
   return connection('articles').insert({ title, body, author, topic }, '*');
 };

@@ -315,7 +315,7 @@ describe('app.js', () => {
             expect(article[0]).to.contain.keys(['id', 'title', 'body', 'author', 'topic', 'created_at', 'votes']);
           });
       });
-      it.only('POST:201, the correct data is inserted.', () => {
+      it('POST:201, the correct data is inserted.', () => {
         const postRequest = {
           title: 'Coding is fun',
           body: 'It may be stressful, but still great :-).',
@@ -382,6 +382,38 @@ describe('app.js', () => {
             .expect(404)
             .then(({ body: { msg } }) => {
               expect(msg).to.equal(`Topic "${topic}" does not exist.`);
+            });
+        });
+        it('POST:400, when client tries to insert any other data than required.', () => {
+          const postRequest = {
+            title: 'Code is fun',
+            body: 'It may be stressful, but still great :-).',
+            author: 'lurker',
+            topic: 'mitch',
+            randomStuff: [1, true, null]
+          };
+
+          return request(app)
+            .post('/api/articles')
+            .send(postRequest)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('Please only include title, body, author and topic in your request.');
+            });
+        });
+        it('POST:400, when the client fails to provide all required data', () => {
+          const postRequest = {
+            body: 'It may be stressful, but still great :-).',
+            author: 'lurker',
+            topic: 'mitch'
+          };
+
+          return request(app)
+            .post('/api/articles')
+            .send(postRequest)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('null value in column "title" violates not-null constraint');
             });
         });
       });
