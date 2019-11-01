@@ -5,13 +5,15 @@ const {
   postCommentByArticleId,
   getCommentsByArticleId,
   getArticles,
-  deleteArticleById
+  deleteArticleById,
+  postArticle
 } = require('../controllers/article-controller');
 const { handle405Errors } = require('../errors');
 
 articleRouter
   .route('/')
   .get(getArticles)
+  .post(postArticle)
   .all(handle405Errors);
 
 articleRouter

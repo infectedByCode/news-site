@@ -130,3 +130,9 @@ exports.removeArticleById = article_id => {
       if (!deleteCount) return Promise.reject({ status: 404, msg: `Article "${article_id}" cannot be found.` });
     });
 };
+
+exports.createArticle = articleData => {
+  const { title, body, author, topic } = articleData;
+
+  return connection('articles').insert({ title, body, author, topic }, '*');
+};

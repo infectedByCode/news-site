@@ -299,6 +299,42 @@ describe('app.js', () => {
             });
           });
       });
+      it('POST:201, creates a new article and returns the created article.', () => {
+        const postRequest = {
+          title: 'Coding is fun',
+          body: 'It may be stressful, but still great :-).',
+          author: 'lurker',
+          topic: 'mitch'
+        };
+
+        return request(app)
+          .post('/api/articles')
+          .send(postRequest)
+          .expect(201)
+          .then(({ body: { article } }) => {
+            expect(article[0]).to.contain.keys(['id', 'title', 'body', 'author', 'topic', 'created_at', 'votes']);
+          });
+      });
+      it.only('POST:201, the correct data is inserted.', () => {
+        const postRequest = {
+          title: 'Coding is fun',
+          body: 'It may be stressful, but still great :-).',
+          author: 'lurker',
+          topic: 'mitch'
+        };
+
+        return request(app)
+          .post('/api/articles')
+          .send(postRequest)
+          .expect(201)
+          .then(({ body: { article } }) => {
+            expect(article[0]['title']).to.equal('Coding is fun');
+            expect(article[0]['body']).to.equal('It may be stressful, but still great :-).');
+            expect(article[0]['author']).to.equal('lurker');
+            expect(article[0]['topic']).to.equal('mitch');
+            expect(article[0]['votes']).to.equal(0);
+          });
+      });
       describe('ERROR /articles', () => {
         it('GET:404, when the URL is invalid', () => {
           return request(app)
@@ -309,7 +345,7 @@ describe('app.js', () => {
             });
         });
         it('STATUS:405, when client attempt an illegal method', () => {
-          const invalidMethods = ['post', 'put', 'patch', 'delete'];
+          const invalidMethods = ['put', 'patch', 'delete'];
           const methodPromises = invalidMethods.map(method => {
             return request(app)
               [method]('/api/articles')
