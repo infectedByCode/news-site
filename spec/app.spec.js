@@ -28,9 +28,12 @@ describe('app.js', () => {
           expect(api).to.have.keys([
             'GET /api',
             'GET /api/topics',
+            'POST /api/topics',
             'GET /api/articles',
+            'POST /api/articles',
             'GET /api/articles/:article_id',
             'PATCH /api/articles/:article_id',
+            'DELETE /api/articles/:article_id',
             'POST /api/articles/:article_id/comments',
             'GET /api/articles/:article_id/comments',
             'PATCH /api/comments/:comment_id',

@@ -4,14 +4,29 @@
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
-    "queries": [],
+    "queries": ["limit", "p"],
     "exampleResponse": {
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/topics": {
+    "description": "creates a new topic then serves the new topic up",
+    "examplePostData": {
+      "slug": "code",
+      "description": "All the wonders of life in code."
+    },
+    "exampleResponse": {
+      "topic": [
+        {
+          "slug": "code",
+          "description": "All the wonders of life in code."
+        }
+      ]
+    }
+  },
   "GET /api/articles": {
     "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": ["author", "topic", "sort_by", "order", "limit", "p"],
     "exampleResponse": {
       "articles": [
         {
@@ -24,12 +39,34 @@
       ]
     }
   },
+  "POST /api/articles": {
+    "description": "creates aa new article and returns article created",
+    "examplePostData": {
+      "title": "Coding is fun",
+      "body": "It may be stressful, but still great :-).",
+      "author": "lurker",
+      "topic": "mitch"
+    },
+    "exampleResponse": {
+      "article": [
+        {
+          "id": 4,
+          "title": "Coding is fun",
+          "topic": "mitch",
+          "author": "lurker",
+          "body": "It may be stressful, but still great :-).",
+          "votes": 0,
+          "created_at": 1527695953341
+        }
+      ]
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "serves an article object with information about given article",
     "queries": [],
     "exampleResponse": {
       "article": {
-        "article_id": 1,
+        "id": 1,
         "title": "Running a Node App",
         "author": "jessjelly",
         "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
@@ -46,7 +83,7 @@
     "examplePatchData": { "inc_votes": 5 },
     "exampleResponse": {
       "article": {
-        "article_id": 1,
+        "id": 1,
         "title": "Running a Node App",
         "author": "jessjelly",
         "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
@@ -55,6 +92,13 @@
         "votes": 0,
         "comment_count": 8
       }
+    }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "removes an by its ID",
+    "queries": [],
+    "exampleResponse": {
+      "status": 204
     }
   },
   "POST /api/articles/:article_id/comments": {
