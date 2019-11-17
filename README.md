@@ -150,12 +150,6 @@ Tests have been created for routes including any possible errors. Any additional
 
 To run the util test run `npm run test-app`
 
-## Deployment
-
----
-
-Please read through the hosting.md in the root folder for more information about hosting on Heroku.
-
 ## License
 
 ---
