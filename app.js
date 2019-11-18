@@ -4,12 +4,7 @@ const cors = require('cors')
 const apiRouter = require('./routes/apiRouter')
 const { customErrorHandlers, psqlErrorHandlers, invalidURLError, handleServerErrors } = require('./errors')
 
-app.use(
-  cors({
-    origin: 'https://msd-news.herokuapp.com',
-    credentials: true
-  })
-)
+app.use(cors())
 app.use(express.json())
 
 app.use('/api', apiRouter)
