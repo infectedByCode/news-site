@@ -13,7 +13,7 @@ These instructions will get you a copy of the project up and running on your loc
 To be able to get the project up and running, you will need the following.
 
 - Node v8.10.0 (minimum)
-- npm [Installation instructions here]('https://www.npmjs.com/get-npm')
+- npm [Installation instructions here](https://www.npmjs.com/get-npm)
 - PostgreSQL (PSQL) 
 
 ### Installing
