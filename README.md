@@ -1,6 +1,6 @@
 # NEWS SITE
 
-A project site for creating and sharing articles on various topics. Users are able to comment on articles as well as upvote comments and articles.
+A reddit-style news site for creating and sharing articles on various topics. Users are able to create, comment and delete articles, create and delete comments as well as upvote comments and articles written by other users. A working example of the this API can be seen [here](https://msd-news.herokuapp.com/api).
 
 ## Getting Started
 
@@ -10,26 +10,11 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-To be able to get the project up and running, you will need to install the following dependencies. It is assumed that you have node and npm installed already. If you do not, please install.
+To be able to get the project up and running, you will need the following.
 
-- express
-- pg
-- knex
-
-```
-npm i express pg knex
-```
-
-You may also wish to install developer dependencies that are used for testing.
-
-- chai
-- chai-sorted
-- mocha
-- supertest
-
-```
-npm i -D chai chai-sorted mocha supertest
-```
+- Node v8.10.0 (minimum)
+- npm [Installation instructions here]('https://www.npmjs.com/get-npm')
+- PostgreSQL (PSQL) 
 
 ### Installing
 
@@ -88,6 +73,31 @@ ALTER USER username WITH PASSWORD 'mysecretword123';
 _BUT_ Instead of username type your Ubuntu username and instead of 'mysecretword123' choose your own password and be sure to wrap it in quotation marks. Use a simple password like ‘password’. DONT USE YOUR LOGIN PASSWORD !
 
 You can then exit out of psql by typing `\q`
+
+#### Cloning to local machine
+
+1. Go to the root of the repository [here](https://github.com/infectedByCode/news-site).
+2. Fork the repository to your GitHub account.
+3. Once forked, you will be given a git link. Copy this link.
+4. Open up a terminal on your local machine and type `git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY` and press *Enter*. Your local clone will then be created. 
+
+#### Installing packages
+
+The following packages will be required to get the API working locally. 
+
+##### Production Packages
+- cors
+- express
+- knex
+- pg
+
+##### Test Packages
+- chai
+- chai-sorted
+- mocha
+- supertest
+
+To install all, type `npm install` and press *Enter*. The packages will be installed from the package.json.
 
 #### Setup databases
 
