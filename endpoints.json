@@ -36,7 +36,8 @@
           "body": "Text from the article..",
           "created_at": 1527695953341
         }
-      ]
+      ],
+      "article_count": 5
     }
   },
   "POST /api/articles": {
@@ -152,6 +153,17 @@
     "queries": [],
     "exampleResponse": {
       "status": 204
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "serves up details of given user",
+    "queries": null,
+    "example": {
+      "user": {
+        "username": "jessjelly",
+        "avatar_url": "https://s-media-cache-ak0.pinimg.com/564x/39/62/ec/3962eca164e60cf46f979c1f57d4078b.jpg",
+        "name": "Jess Jelly"
+      }
     }
   }
 }
