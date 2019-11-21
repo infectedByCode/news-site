@@ -227,7 +227,8 @@ describe('app.js', () => {
         return request(app)
           .get('/api/articles?limit=2')
           .expect(200)
-          .then(({ body: { articles } }) => {
+          .then(({ body: { articles, article_count } }) => {
+            
             expect(articles).to.be.lengthOf(2);
           });
       });

@@ -67,7 +67,6 @@ exports.selectCommentsByArticleId = (article_id, sort_by = 'created_at', order =
 
 exports.selectArticles = (sort_by = 'created_at', order = 'desc', author, topic, limit = 10, p = 1) => {
   return connection('articles')
-    .count('* as article_count')
     .select(
       'articles.id',
       'articles.title',
