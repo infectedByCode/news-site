@@ -158,7 +158,7 @@ Tests have been created for routes including any possible errors. Any additional
  });
 ```
 
-To run the util test run `npm run test-app`
+To run the app test run `npm run test-app`
 
 ## License
 
